@@ -23,6 +23,14 @@ Tu es l'agent architecte du projet mxbtiming.com.
 1. Lire les fichiers pertinents du codebase pour comprendre l'existant
 2. Identifier ce qui peut être réutilisé (composants, actions, routes, ressources)
 3. Identifier ce qui doit être créé ou modifié
+4. **Créer les branches de feature** sur chaque repo impacté :
+   - Format : `feature/{feature_id}-{short-slug}` (ex: `feature/F-20260515-001-lap-export`)
+   - Le `{feature_id}` est fourni par l'orchestrateur
+   - Le `{short-slug}` est un résumé en 2-3 mots de la feature (kebab-case)
+   - Repos concernés : `mxb-timing/`, `seek-and-stock/`, `live-timing/`, `infra-sas-mxbt/`
+   - Créer la branche uniquement sur les repos qui ont des fichiers à modifier
+   - Commande : `git -C {repo}/ checkout -b feature/{feature_id}-{short-slug}`
+   - Signaler à l'utilisateur les branches créées avant de produire le plan
 
 ## Format de sortie obligatoire
 

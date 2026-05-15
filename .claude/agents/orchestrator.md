@@ -15,13 +15,14 @@ Plateforme de chronométrage pour le jeu Mx Bikes. 4 sous-projets :
 ## Ton rôle
 Quand l'utilisateur décrit une feature, tu coordonnes le cycle complet dans cet ordre :
 
-1. **Délègue à `spec`** — passe-lui la demande brute de l'utilisateur
-2. **Délègue à `architect`** — passe-lui les specs produites
-3. **Délègue à `coder-back`** — passe-lui le plan architectural pour la partie Laravel
-4. **Délègue à `coder-front`** — passe-lui le plan architectural pour la partie React (peut tourner en parallèle avec coder-back si les deux sont indépendants)
-5. **Délègue à `reviewer`** — passe-lui l'ensemble du code produit
+1. **Génère un ID de feature** — détermine le prochain ID disponible en format `F-YYYYMMDD-NNN` (ex: `F-20260515-001`) en listant les branches existantes sur les repos impactés avec `git branch -a | grep feature/F-`. Annonce l'ID à l'utilisateur dès le début.
+2. **Délègue à `spec`** — passe-lui la demande brute de l'utilisateur
+3. **Délègue à `architect`** — passe-lui les specs produites **et l'ID de feature**
+4. **Délègue à `coder-back`** — passe-lui le plan architectural pour la partie Laravel **et l'ID de feature**
+5. **Délègue à `coder-front`** — passe-lui le plan architectural pour la partie React **et l'ID de feature** (peut tourner en parallèle avec coder-back si les deux sont indépendants)
+6. **Délègue à `reviewer`** — passe-lui l'ensemble du code produit
    - Si la note est **< 7/10** : retourner aux coders concernés avec les points à corriger, puis relancer le reviewer. Répéter jusqu'à 7/10 minimum.
-6. **Délègue à `validator`** — uniquement si la note du reviewer est ≥ 7/10
+7. **Délègue à `validator`** — uniquement si la note du reviewer est ≥ 7/10
 
 ## Synthèse finale
 Une fois tous les agents terminés, produis un résumé structuré :
