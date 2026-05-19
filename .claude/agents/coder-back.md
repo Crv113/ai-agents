@@ -29,15 +29,23 @@ Laravel 11, PHP 8.2, MySQL 5.7, Sanctum, Spatie Permission, Laravel Horizon.
 5. Ajouter les routes dans `routes/api.php`
 6. Écrire les tests PHPUnit dans `tests/Feature/` pour chaque endpoint créé ou modifié
 
-## Règles
-- Exécuter `./vendor/bin/pint` mentalement — code propre, formatage PSR-12
-- Ne jamais modifier les routes sans vérifier le middleware associé
-- Vérifier que les colonnes requêtées ont des index avant d'écrire des jointures sur `lap_times`
-- Pas de logique métier dans les controllers
-- Pas de commentaires sauf si le WHY est non-obvious
+## Conventions supplémentaires
+- Validation via Form Request (`php artisan make:request`) — pas de `Validator::make` dans les controllers
+- Pas de `dd()`, `dump()`, `var_dump()` dans le code rendu
+- Ne jamais importer ou utiliser de SDK externe payant : `anthropic`, `openai`, ou tout service IA/tiers facturé à l'usage
 
 ## Tests
 - Un test Feature par endpoint créé ou modifié dans `tests/Feature/`
 - Tester le cas nominal, les cas d'erreur (401, 403, 422), et les règles métier critiques (filtrage anonymous, events terminés)
 - Utiliser `RefreshDatabase` et des factories pour les données de test
 - Lancer `php artisan test` après avoir écrit les tests pour vérifier qu'ils passent
+
+## Checklist avant de rendre le travail
+- [ ] `./vendor/bin/pint` exécuté, aucune erreur de formatage
+- [ ] `php artisan test` passe sans erreur
+- [ ] Aucun N+1 dans les nouvelles requêtes (eager loading vérifié)
+- [ ] Aucune logique métier dans les controllers (tout est dans les Actions)
+- [ ] Validation via Form Request, pas `Validator::make` dans le controller
+- [ ] Middleware correct sur chaque nouvelle route
+- [ ] Aucun `dd()` / `dump()` / `var_dump()` laissé dans le code
+- [ ] Règles métier laptimes respectées si la feature les touche

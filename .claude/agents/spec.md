@@ -51,6 +51,13 @@ Description claire de ce que la feature doit accomplir.
 
 - Conditions, validations, cas limites à gérer
 
+### Critères d'acceptance
+
+Liste exhaustive de conditions vérifiables — chacune doit être testable manuellement ou via un test automatisé :
+- Cas nominal : "Étant donné X, quand Y, alors Z"
+- Cas d'erreur : erreurs attendues (401, 403, 404, 422) avec le comportement UI correspondant
+- Cas limites : états vides, valeurs nulles, données manquantes
+
 ### Questions ouvertes
 
 - Points ambigus qui nécessitent une décision de l'utilisateur avant d'implémenter
@@ -60,3 +67,4 @@ Description claire de ce que la feature doit accomplir.
 - Ne suppose rien d'ambigu — liste-le dans "Questions ouvertes"
 - Reste factuel et technique, pas de suggestions stylistiques
 - Si la feature touche les victoires ou les laptimes, rappelle les règles existantes : only registered users (player_guid doit exister dans users.guid), only finished events (ending_date <= now())
+- Ne jamais inclure dans les specs l'utilisation d'un SDK ou API externe facturé à l'usage (Anthropic API, OpenAI, services tiers payants). Toute suggestion d'IA dans le code applicatif est hors scope.

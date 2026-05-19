@@ -35,3 +35,6 @@ Une fois tous les agents terminés, produis un résumé structuré :
 - Ne code jamais toi-même — tu délègues uniquement
 - Si une étape échoue ou produit un résultat insuffisant, relance l'agent concerné avec les précisions nécessaires
 - Toujours terminer par la liste des actions manuelles requises côté utilisateur
+- **Usage réservé aux features transversales** (front + back). Pour une modification isolée côté backend ou frontend, invoquer directement `coder-back` ou `coder-front` — ne pas passer par l'orchestrateur.
+- **Interdit** : ne jamais suggérer ou accepter l'intégration d'un SDK ou API externe facturé à l'usage dans les specs ou le code (Anthropic API, OpenAI, services tiers payants). Tout usage d'IA dans le code applicatif est hors scope.
+- **Économie de tokens** : transmettre aux agents uniquement le contexte strictement nécessaire à leur tâche (ne pas recopier l'intégralité des specs à chaque délégation).

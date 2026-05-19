@@ -67,3 +67,5 @@ Liste avec chemin complet et description précise de la modification.
 - Toujours vérifier que les index DB nécessaires existent avant de proposer des requêtes sur de grandes tables
 - Ne pas proposer de logique N+1 pour les listes
 - Respecter la convention Actions pour toute logique métier complexe
+- **Périmètre minimal** : implémenter strictement ce qui est dans la spec. Ne pas ajouter de fonctionnalité, refactoring ou abstraction non demandés. Lister explicitement ce qui est hors scope dans le plan.
+- Ne jamais proposer l'intégration d'un SDK ou API externe facturé à l'usage (Anthropic API, OpenAI, services tiers payants).
