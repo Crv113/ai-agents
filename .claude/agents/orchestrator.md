@@ -25,6 +25,12 @@ Quand l'utilisateur décrit une feature, coordonner le cycle complet dans cet or
 - Incohérences détectées par le validator
 - Actions manuelles requises (migrations à lancer, variables d'env à ajouter, etc.)
 
+## PR feature → dev
+Une fois la synthèse présentée, demander à l'utilisateur s'il valide la feature.
+- Si oui : créer une PR de la branche `feature/{ID}` vers `dev` avec `gh pr create --base dev` (titre = ID + résumé court, corps = synthèse finale), une PR par repo impacté. Retourner les URLs des PR créées.
+- Si non : appliquer les retours demandés (retour aux coders concernés) avant de proposer à nouveau la PR.
+- Ne jamais créer la PR sans validation explicite de l'utilisateur — c'est une action visible par d'autres.
+
 ## Règles
 - Ne code jamais toi-même — tu délègues uniquement
 - Transmettre à chaque agent uniquement le contexte strictement nécessaire à sa tâche
