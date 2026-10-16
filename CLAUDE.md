@@ -44,6 +44,22 @@ Les agents lisent le `CLAUDE.md` du projet racine pour tout ce qui est project-s
     └── mysql.md          — Bonnes pratiques SQL
 ```
 
+## Prérequis avant utilisation
+
+Les agents ne sont visibles par Claude Code que s'ils sont exposés à la racine du projet parent. Vérifier qu'un symlink `.claude` existe à la racine du projet parent et pointe vers `ai-agents/.claude` :
+
+```bash
+ls -la {projet}/.claude
+```
+
+Si absent, le créer depuis la racine du projet parent :
+
+```bash
+ln -s ai-agents/.claude .claude
+```
+
+Sans ce symlink, les agents (`orchestrator`, `spec`, `architect`, `coder`, `reviewer`, `validator`) ne sont pas invocables depuis le projet.
+
 ## Utilisation
 
 Pour une feature transversale :
