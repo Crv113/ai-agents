@@ -36,12 +36,12 @@ Les agents lisent le `CLAUDE.md` du projet racine pour tout ce qui est project-s
 │   ├── coder.md          — Implémente une couche (charge les skills requis)
 │   ├── reviewer.md       — Relit le git diff (Haiku)
 │   └── validator.md      — Vérifie la cohérence entre couches (Haiku)
-└── skills/
-    ├── laravel.md        — Conventions Laravel + PHP
-    ├── react.md          — Conventions React + TanStack Query + Tailwind
-    ├── java-spring.md    — Conventions Java + Spring Boot
-    ├── java-jda.md       — Conventions JDA (Discord bot)
-    └── mysql.md          — Bonnes pratiques SQL
+└── skills/             — skills natifs Claude Code (un dossier par skill)
+    ├── laravel/SKILL.md      — Conventions Laravel + PHP
+    ├── react/SKILL.md        — Conventions React + TanStack Query + Tailwind
+    ├── java-spring/SKILL.md  — Conventions Java + Spring Boot
+    ├── java-jda/SKILL.md     — Conventions JDA (Discord bot)
+    └── mysql/SKILL.md        — Bonnes pratiques SQL
 ```
 
 ## Prérequis avant utilisation
@@ -71,4 +71,13 @@ L'`architect` identifie les skills requis par couche. Le `coder` les charge avan
 
 ## Ajouter un skill
 
-Créer un fichier dans `.claude/skills/`. L'`architect` et le `coder` le chargeront dès qu'il est listé dans un plan.
+Créer un dossier `.claude/skills/<nom>/` contenant un `SKILL.md` qui commence par un frontmatter :
+
+```markdown
+---
+name: <nom>
+description: <ce que couvre le skill et quand le charger>
+---
+```
+
+La `description` est ce que Claude Code utilise pour charger le skill automatiquement — elle doit dire quand l'utiliser. Le skill est aussi invocable via `/<nom>`, et l'`architect` peut le lister dans un plan pour que `coder` et `reviewer` le chargent.

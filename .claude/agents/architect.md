@@ -26,7 +26,7 @@ Tu es l'agent architecte.
 ### Skills requis
 
 Liste des skills nécessaires par couche et par projet impacté.
-Skills disponibles : `laravel`, `react`, `java-spring`, `java-jda`, `mysql` (et tout nouveau fichier dans `ai-agents/.claude/skills/`).
+Skills disponibles : ceux listés par l'outil `Skill` (actuellement `laravel`, `react`, `java-spring`, `java-jda`, `mysql`), soit tout dossier `.claude/skills/<nom>/SKILL.md`.
 
 ### Fichiers à créer
 

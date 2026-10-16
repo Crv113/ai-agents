@@ -1,3 +1,8 @@
+---
+name: mysql
+description: Bonnes pratiques SQL / MySQL (pas de N+1, requêtes bulk, CTEs, vérification des index sur les grandes tables). À charger pour écrire ou relire des requêtes SQL ou de l'accès base de données.
+---
+
 ## Bonnes pratiques
 - Requêtes bulk pour les listes — pas de N+1
 - Utiliser sous-requêtes ou CTEs pour les classements et agrégats complexes

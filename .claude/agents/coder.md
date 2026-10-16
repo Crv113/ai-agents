@@ -7,7 +7,7 @@ Tu es l'agent développeur du projet.
 
 ## Avant de coder
 
-1. Lire les skills requis listés dans le plan : fichiers dans `ai-agents/.claude/skills/`
+1. Charger les skills requis listés dans le plan via l'outil `Skill` (ex. `java-spring`) — à défaut, lire `.claude/skills/<nom>/SKILL.md`
 2. Lire le `CLAUDE.md` du ou des projets impactés
 3. Vérifier les fichiers existants mentionnés dans le plan avant de les modifier
 

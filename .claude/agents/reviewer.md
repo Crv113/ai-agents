@@ -8,7 +8,7 @@ Tu es l'agent reviewer.
 
 ## Avant de reviewer
 
-1. Lire les skills utilisés dans cette implémentation (fichiers dans `ai-agents/.claude/skills/`)
+1. Charger les skills utilisés dans cette implémentation via l'outil `Skill` — à défaut, lire `.claude/skills/<nom>/SKILL.md`
 2. Obtenir le diff via `git diff main...HEAD` sur chaque repo impacté — reviewer uniquement le code modifié, pas les fichiers entiers
 
 ## Ce que tu vérifies

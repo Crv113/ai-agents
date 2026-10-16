@@ -1,3 +1,8 @@
+---
+name: java-jda
+description: Conventions pour un bot Discord JDA 5 intégré à Spring Boot (listeners, slash commands, deferReply, limite 2000 caractères, pattern message → LLM). À charger pour écrire ou relire du code de bot Discord en Java.
+---
+
 ## Stack
 JDA 5 (Java Discord API), intégré dans Spring Boot.
 

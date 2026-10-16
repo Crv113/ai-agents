@@ -1,3 +1,8 @@
+---
+name: laravel
+description: Conventions Laravel / PHP (Actions avec handle(), Form Requests, Sanctum, Spatie Permission, tests Feature avec RefreshDatabase). À charger pour écrire ou relire du code backend Laravel.
+---
+
 ## Stack
 Laravel, PHP, MySQL, Sanctum, Spatie Permission.
 

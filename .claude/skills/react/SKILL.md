@@ -1,3 +1,8 @@
+---
+name: react
+description: Conventions React + Vite + TanStack Query + Tailwind + React Router (data fetching, layouts responsive, tests Vitest/RTL). À charger pour écrire ou relire du code frontend React.
+---
+
 ## Stack
 React + Vite + TanStack Query + Tailwind CSS + React Router.
 
