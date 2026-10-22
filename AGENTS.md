@@ -33,6 +33,8 @@ Les agents lisent le `CLAUDE.md` du projet pour tout ce qui est propre au projet
 Branche cible des PR : main          # défaut main si absent
 Build : <commande>                   # par sous-projet si besoin
 Tests : <commande>
+Lancement : <commande> → <URL ou port>   # écrit par le tester s'il l'a déduit
+Comptes de test : <identifiants de test uniquement>
 ```
 
 Ces lignes seront générées par `/setup` (phase 4). En leur absence, les agents utilisent la section Build des skills ou déduisent les commandes des fichiers du projet.
@@ -44,11 +46,13 @@ Ces lignes seront générées par `/setup` (phase 4). En leur absence, les agent
 /feature <ID>          → reprend une feature en cours (ex. F-20261022-001)
 ```
 
-Cycle : spec → **validation utilisateur** → architect (crée la branche) → **validation utilisateur** → coder (×N couches, build + tests) → commit → reviewer (build + tests + note ≥ 7, 3 tours max) → validator → synthèse → PR vers la branche cible après accord.
+Cycle : spec → **validation utilisateur** → architect (crée la branche) → **validation utilisateur** → coder (×N couches, build + tests) → commit → reviewer (build + tests + note ≥ 7) **en parallèle de** tester (appli lancée, critères d'acceptation vérifiés en vrai), 3 tours max → validator → synthèse → PR vers la branche cible après accord.
+
+Le tester lance son propre navigateur (Playwright MCP, via `npx`, défini dans `connectors/claude/agents.conf`). **Prérequis : Node ≥ 20** dans le `PATH` des sessions Claude Code. Sans navigateur, les critères d'interface passent en « non testé ».
 
 `/feature` tourne dans la session principale : c'est la seule qui peut poser des questions à l'utilisateur (un subagent n'y a pas accès). Il ne code jamais.
 
-Les documents de la feature sont dans le projet, sous `.ai-agents/features/<ID>/` (`status.md`, `spec.md`, `plan.md`, `review.md`), exclus de git localement via `.git/info/exclude`.
+Les documents de la feature sont dans le projet, sous `.ai-agents/features/<ID>/` (`status.md`, `spec.md`, `plan.md`, `review.md`, `test-report.md`), exclus de git localement via `.git/info/exclude`.
 
 Pour une modification isolée, lancer directement `coder` ou `architect`.
 

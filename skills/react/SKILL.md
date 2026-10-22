@@ -34,3 +34,16 @@ Ce skill n'impose aucune version : avant d'écrire du code, déterminer les vers
 - Variables d'environnement
 - Structure des dossiers, routes, navigation
 - Conventions UI et composants existants à réutiliser
+
+## Test en conditions réelles
+- Lancement : script de dev de `package.json` (`dev` ou `start`), URL affichée au démarrage (ex. `http://localhost:5173`)
+- Navigateur : naviguer vers chaque page concernée, agir comme l'utilisateur, lire la page via le snapshot d'accessibilité
+- Vérifier : erreurs de console, état de chargement, état vide, état d'erreur (API en échec ou données absentes), affichage mobile (375×812)
+- Si le front dépend d'une API : la lancer aussi (voir le skill de la couche backend) ou signaler les critères concernés en « non testé »
+- E2E : si `@playwright/test` (ou Cypress) est dans `package.json`, écrire les tests dans le dossier E2E existant
+
+## Points de cohérence
+- Chaque champ lu côté front existe dans la réponse de l'API, avec le même nom et le même type (nullabilité comprise)
+- Chaque URL appelée correspond à une route existante, avec la bonne méthode HTTP
+- Le token ou cookie d'auth est transmis sur les appels protégés, et les erreurs 401/403 sont gérées dans l'UI
+- Les états vides et d'erreur prévus par la spec existent dans l'UI

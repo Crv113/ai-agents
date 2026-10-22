@@ -43,3 +43,14 @@ Utiliser le wrapper `./mvnw` s'il est présent dans le projet (version de Maven 
 ./mvnw package            # build .jar
 ./mvnw test               # tests
 ```
+
+## Test en conditions réelles
+- Lancement : `./mvnw spring-boot:run` (ou `mvn`), avec le profil de dev/test indiqué dans le `CLAUDE.md` du projet. Port : `server.port`, défaut 8080
+- Attendre que l'application réponde (endpoint de santé s'il existe, sinon un endpoint de la feature)
+- Requêtes HTTP (`curl`) sur chaque endpoint de la feature : cas nominal, erreurs (400, 401, 403, 404)
+- Base : uniquement la base de test ou la base en mémoire du profil de test
+
+## Points de cohérence
+- `ddl-auto=validate` : chaque changement d'entité a son script de migration (Flyway/Liquibase) ou son changement de schéma documenté
+- Les DTO renvoyés correspondent au contrat attendu par les autres couches (noms, types, nullabilité, format des dates)
+- Les endpoints protégés ont la règle de sécurité attendue

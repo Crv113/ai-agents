@@ -16,3 +16,11 @@ Ce skill n'impose aucune version : avant d'écrire du SQL, déterminer la versio
 ## À lire dans le CLAUDE.md du projet
 - Index existants sur les tables principales
 - Règles métier SQL spécifiques au domaine
+
+## Test en conditions réelles
+- Pas de lancement propre : vérifier les données à travers la couche applicative (API, handlers)
+- Requêtes SQL directes uniquement en lecture (`SELECT`) et uniquement sur la base de test
+
+## Points de cohérence
+- Chaque filtre, tri ou jointure ajouté sur une grande table s'appuie sur un index existant ou créé par une migration de la feature
+- Les colonnes utilisées dans les requêtes existent dans le schéma (migrations comprises)

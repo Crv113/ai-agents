@@ -1,6 +1,6 @@
 ---
 name: feature
-description: Cycle complet d'une feature transversale (spec → architect → coder → reviewer → validator → PR) avec validation humaine de la spec et du plan. Lancé par l'utilisateur avec /feature <demande>, ou /feature <ID> pour reprendre une feature.
+description: Cycle complet d'une feature transversale (spec → architect → coder → reviewer + tester → validator → PR) avec validation humaine de la spec et du plan. Lancé par l'utilisateur avec /feature <demande>, ou /feature <ID> pour reprendre une feature.
 ---
 
 Tu orchestres le cycle d'une feature dans la session principale. Tu délègues tout aux agents, tu ne codes jamais. Les seules actions que tu fais toi-même : lire le `CLAUDE.md` du projet, gérer le dossier de la feature, committer, et créer la PR après accord.
@@ -48,18 +48,24 @@ Sur la branche de feature de chaque repo impacté : `git add` **uniquement des f
 
 ## 5. Review
 
-1. Lancer l'agent `reviewer` avec : skills utilisés, branche cible, chemin de sortie `.ai-agents/features/<ID>/review.md`.
-2. **Passage** = build OK + tests verts + note ≥ 7/10.
-3. Pas de passage → renvoyer les bloquants aux coders concernés, committer, relancer le reviewer.
-4. **Au bout de 3 tours sans passage** : s'arrêter, présenter le dernier `review.md` et demander à l'utilisateur comment continuer.
+Lancer **en parallèle** :
+- l'agent `reviewer` avec : skills utilisés, branche cible, chemin de sortie `.ai-agents/features/<ID>/review.md`
+- l'agent `tester` avec : chemins de `spec.md` et `plan.md`, skills utilisés, chemin de sortie `.ai-agents/features/<ID>/test-report.md`
+
+Puis :
+1. **Infos manquantes du tester** (identifiants de test, variables d'env…) → les demander à l'utilisateur, les écrire dans le `CLAUDE.md` du projet, relancer le tester.
+2. **Fichiers modifiés par le tester** (tests E2E, ligne `Lancement :` du `CLAUDE.md`) → les committer, puis faire relire **uniquement ces fichiers** par le reviewer.
+3. **Passage** = reviewer OK (build OK + tests verts + note ≥ 7/10) **et** aucun critère « échoué » dans `test-report.md`. Les critères « non testé » ne bloquent pas mais figurent dans la synthèse.
+4. Pas de passage → renvoyer les bloquants du reviewer et les critères échoués du tester aux coders concernés, committer, relancer reviewer et tester.
+5. **Au bout de 3 tours sans passage** (reviewer et tester confondus) : s'arrêter, présenter les derniers rapports et demander à l'utilisateur comment continuer.
 
 ## 6. Validation de cohérence
 
-Lancer l'agent `validator` avec : chemins de `spec.md` et `plan.md`, skills utilisés, branche cible. Incohérences bloquantes → retour aux coders, commit, puis review et validator à nouveau.
+Lancer l'agent `validator` avec : chemins de `spec.md`, `plan.md` et `test-report.md`, skills utilisés, branche cible. Incohérences bloquantes → retour aux coders, commit, puis review, tester et validator à nouveau.
 
 ## 7. Synthèse et PR
 
-1. Présenter : ce qui a été implémenté, la note et les avertissements du reviewer, les incohérences relevées, **les actions manuelles** (migrations, variables d'env…).
+1. Présenter : ce qui a été implémenté, la note et les avertissements du reviewer, **le tableau des critères du tester** (passés, échoués, non testés), les incohérences relevées, **les actions manuelles** (migrations, variables d'env…).
 2. Demander si l'utilisateur valide la feature et la création de la PR.
    - Oui → push de la branche, puis `gh pr create --base <branche cible>` (titre `<ID>: <résumé>`, corps = synthèse), une PR par repo impacté. Donner les URLs.
    - Non → appliquer les retours (coders, commit, review), puis reproposer.

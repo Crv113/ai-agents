@@ -35,3 +35,16 @@ Ce skill n'impose aucune version : avant d'écrire du code, déterminer les vers
 - Resources existantes à réutiliser
 - Middlewares custom et leurs noms
 - Règles métier à appliquer dans les requêtes
+
+## Test en conditions réelles
+- Lancement : `php artisan serve` (défaut `http://127.0.0.1:8000`), ou le service web du `docker-compose.yml` s'il existe
+- Requêtes HTTP (`curl`) sur chaque endpoint de la feature : cas nominal, 401 sans token, 403 avec un compte sans droit, 422 avec un payload invalide
+- Auth : uniquement les comptes de test du `CLAUDE.md` du projet (token Sanctum obtenu via la route de login de test)
+- Base : uniquement la base de test. Vérifier dans `.env` / `phpunit.xml` que ce n'est pas la base principale avant toute requête qui écrit
+- Ne jamais lancer `migrate:fresh`, `migrate:refresh`, `db:wipe` ni de seed non idempotent
+
+## Points de cohérence
+- Chaque nouveau champ ou table utilisé dans le code a une migration
+- Chaque route protégée a le middleware attendu (`auth:sanctum`, rôle, middleware custom du `CLAUDE.md` du projet)
+- Les Resources renvoient tous les champs consommés par les autres couches, avec les mêmes noms
+- Les Form Requests valident les champs envoyés par le front

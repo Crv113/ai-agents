@@ -47,7 +47,7 @@ Refonte du workflow d'agents pour Claude Code (spec → architect → coder → 
 - [x] **Phase 0** : tag `v1`, branche `refonte`, ce document.
 - [x] **Phase 1** : structure neutre (`AGENTS.md`, agents, skills, règle des versions) + `install.sh` / `uninstall.sh`.
 - [x] **Phase 2** : flow (`/feature`, validations humaines, coder build + tests, reviewer grille + modèle, branche des PR).
-- [ ] **Phase 3** : tester + validator générique.
+- [x] **Phase 3** : tester + validator générique.
 - [ ] **Phase 4** : `/setup`.
 - [ ] **Phase 5** : hooks d'événements.
 - [ ] **Plus tard** : dashboard.
