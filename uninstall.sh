@@ -66,6 +66,8 @@ if [ -d "$BUILD" ]; then
   say "suppression des agents générés : $BUILD"
   for f in "$BUILD"/agents/*.md; do [ -f "$f" ] && do_ rm -f "$f"; done
   do_ rmdir "$BUILD/agents" 2>/dev/null || true
+  for d in "$BUILD"/skills/*/; do [ -d "$d" ] && do_ rm -rf "$d"; done
+  do_ rmdir "$BUILD/skills" 2>/dev/null || true
   do_ rmdir "$BUILD" 2>/dev/null || true
 fi
 do_ rm -f "$STATE"

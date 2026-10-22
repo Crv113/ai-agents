@@ -20,7 +20,7 @@ Refonte du workflow d'agents pour Claude Code (spec → architect → coder → 
 
 ## Rôles
 
-- **`/feature`** (skill, remplace l'agent orchestrator ; tourne dans la session principale car un subagent ne peut ni lancer d'autres subagents ni poser de questions) : ID de feature, enchaîne les agents, s'arrête pour faire valider la spec puis le plan, gère les allers-retours, propose la PR vers la branche définie dans le `CLAUDE.md` du projet (défaut `main` ; aujourd'hui `orchestrator.md` dit `--base dev` alors que les PR vont vers `main`). Ne code jamais.
+- **`/feature`** (skill, remplace l'agent orchestrator ; tourne dans la session principale car un subagent ne peut pas poser de questions à l'utilisateur — `AskUserQuestion` lui est retiré ; il peut en revanche lancer d'autres subagents depuis peu, ce n'est donc plus une raison) : ID de feature, enchaîne les agents, s'arrête pour faire valider la spec puis le plan, gère les allers-retours, propose la PR vers la branche définie dans le `CLAUDE.md` du projet (défaut `main` ; aujourd'hui `orchestrator.md` dit `--base dev` alors que les PR vont vers `main`). Ne code jamais.
 - **spec** : objectif, périmètre, données, interfaces, règles métier, critères d'acceptation, questions ouvertes auxquelles l'utilisateur répond avant la suite.
 - **architect** : explore l'existant, plan fichier par fichier, ordre et parallélisme, skills requis, relève les versions, crée la branche de feature.
 - **coder** : implémente sa partie dans le périmètre, écrit les tests, lance build + tests et corrige jusqu'au vert.
@@ -46,7 +46,7 @@ Refonte du workflow d'agents pour Claude Code (spec → architect → coder → 
 
 - [x] **Phase 0** : tag `v1`, branche `refonte`, ce document.
 - [x] **Phase 1** : structure neutre (`AGENTS.md`, agents, skills, règle des versions) + `install.sh` / `uninstall.sh`.
-- [ ] **Phase 2** : flow (`/feature`, validations humaines, coder build + tests, reviewer grille + modèle, branche des PR).
+- [x] **Phase 2** : flow (`/feature`, validations humaines, coder build + tests, reviewer grille + modèle, branche des PR).
 - [ ] **Phase 3** : tester + validator générique.
 - [ ] **Phase 4** : `/setup`.
 - [ ] **Phase 5** : hooks d'événements.

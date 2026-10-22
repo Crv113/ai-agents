@@ -27,13 +27,39 @@ ai-agents/          → workflow (comment travailler)
 
 Les agents lisent le `CLAUDE.md` du projet pour tout ce qui est propre au projet. Aucune règle de domaine ni aucun chemin propre à un projet dans les agents ou les skills.
 
+### Ce que le workflow lit dans le CLAUDE.md du projet
+
+```markdown
+Branche cible des PR : main          # défaut main si absent
+Build : <commande>                   # par sous-projet si besoin
+Tests : <commande>
+```
+
+Ces lignes seront générées par `/setup` (phase 4). En leur absence, les agents utilisent la section Build des skills ou déduisent les commandes des fichiers du projet.
+
+## Utilisation
+
+```
+/feature <demande>     → lance le cycle complet d'une feature transversale
+/feature <ID>          → reprend une feature en cours (ex. F-20261022-001)
+```
+
+Cycle : spec → **validation utilisateur** → architect (crée la branche) → **validation utilisateur** → coder (×N couches, build + tests) → commit → reviewer (build + tests + note ≥ 7, 3 tours max) → validator → synthèse → PR vers la branche cible après accord.
+
+`/feature` tourne dans la session principale : c'est la seule qui peut poser des questions à l'utilisateur (un subagent n'y a pas accès). Il ne code jamais.
+
+Les documents de la feature sont dans le projet, sous `.ai-agents/features/<ID>/` (`status.md`, `spec.md`, `plan.md`, `review.md`), exclus de git localement via `.git/info/exclude`.
+
+Pour une modification isolée, lancer directement `coder` ou `architect`.
+
 ## Structure
 
 ```
 agents/<nom>.md           — un agent : frontmatter neutre (name, description) + instructions
 skills/<nom>/SKILL.md     — un skill au format standard Agent Skills (name, description)
 connectors/claude/
-  agents.conf             — champs propres à Claude Code par agent (model, tools…)
+  agents.conf             — champs propres à Claude Code par agent (model, disallowedTools…)
+  skills.conf             — champs propres à Claude Code par skill (disable-model-invocation…)
   build/                  — généré par install.sh (ignoré par git)
 install.sh / uninstall.sh — connecteur Claude Code
 docs/REFONTE.md           — feuille de route
@@ -42,7 +68,8 @@ docs/REFONTE.md           — feuille de route
 ## Règles de format
 
 - **Agents** : le frontmatter ne contient que `name` et `description`. Tout champ propre à un outil (ex. `model`) va dans le connecteur (`connectors/claude/agents.conf`, une ligne `agent.champ=valeur`).
-- **Skills** : frontmatter `name` + `description` uniquement. La `description` dit quand charger le skill.
+- **Skills** : frontmatter `name` + `description` uniquement. La `description` dit quand charger le skill. Les champs propres à Claude Code (`disable-model-invocation`, `argument-hint`…) vont dans `connectors/claude/skills.conf` : hors de Claude Code, une clé inconnue fait échouer le chargement du skill.
+- **Modèles** : uniquement des alias (`sonnet`, `opus`, `haiku`…), jamais un ID daté. Choisir le modèle le moins cher qui fait correctement le travail de l'agent.
 
 ## Versions
 
@@ -63,7 +90,7 @@ Un seul clone, où l'on veut. Depuis le clone :
 ./uninstall.sh          # retire tout et restaure l'état précédent
 ```
 
-`install.sh` génère les agents au format Claude Code dans `connectors/claude/build/agents/`, puis crée un lien par agent (`~/.claude/agents/<nom>.md`) et par skill (`~/.claude/skills/<nom>`). Il sauvegarde ce qu'il remplace, demande avant toute suppression, et peut être relancé sans risque, y compris après un déplacement du clone. **Relancer `install.sh` après avoir modifié un agent ou `agents.conf`** (les skills sont liés directement, pas besoin). Redémarrer Claude Code ensuite.
+`install.sh` génère les agents au format Claude Code dans `connectors/claude/build/agents/`, puis crée un lien par agent (`~/.claude/agents/<nom>.md`) et par skill (`~/.claude/skills/<nom>`). Il sauvegarde ce qu'il remplace, demande avant toute suppression, et peut être relancé sans risque, y compris après un déplacement du clone. Les skills qui ont des champs dans `skills.conf` sont générés dans `connectors/claude/build/skills/`, les autres sont liés directement. **Relancer `install.sh` après avoir modifié un agent, `agents.conf`, `skills.conf` ou un skill listé dans `skills.conf`** (pas besoin pour les autres skills). Redémarrer Claude Code ensuite.
 
 ## Migration depuis la v1
 

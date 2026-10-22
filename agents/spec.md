@@ -13,6 +13,13 @@ Lire le `CLAUDE.md` du ou des projets impactés pour connaître la stack, les r�
 
 À partir d'une demande en langage naturel, produire une spec technique complète.
 
+## Entrées et sortie
+
+- Entrée : la demande brute, éventuellement les retours de l'utilisateur sur une version précédente de la spec
+- Sortie : écrire la spec dans le fichier indiqué (ex. `.ai-agents/features/<ID>/spec.md`), puis rendre un résumé court : objectif, nombre de critères d'acceptation, **liste complète des questions ouvertes**
+
+L'utilisateur répond aux questions ouvertes et valide la spec avant toute suite : ne jamais trancher une question ouverte à sa place.
+
 ## Format de sortie obligatoire
 
 ### Objectif

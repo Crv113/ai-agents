@@ -16,8 +16,11 @@ REPO="$(cd "$(dirname "$0")" && pwd -P)"
 CLAUDE_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
 STATE_DIR="$CLAUDE_DIR/ai-agents"
 STATE="$STATE_DIR/state"
-BUILD="$REPO/connectors/claude/build/agents"
-CONF="$REPO/connectors/claude/agents.conf"
+CONNECTOR="$REPO/connectors/claude"
+BUILD="$CONNECTOR/build/agents"
+SKILLS_BUILD="$CONNECTOR/build/skills"
+AGENTS_CONF="$CONNECTOR/agents.conf"
+SKILLS_CONF="$CONNECTOR/skills.conf"
 STAMP="$(date +%Y%m%d-%H%M%S)"
 BACKUP_DIR="$STATE_DIR/backups/$STAMP"
 
@@ -62,37 +65,39 @@ is_ours() {
   return 1
 }
 
-# --- Génération des agents -----------------------------------------------
+# --- Génération --------------------------------------------------------------
+# Lignes "<nom>.<champ>=<valeur>" du fichier de conf, converties en "champ: valeur".
+conf_fields() { # $1 = fichier conf, $2 = nom
+  [ -f "$1" ] || return 0
+  grep -E "^$2\.[A-Za-z-]+=" "$1" | sed -E "s/^$2\.([A-Za-z-]+)=/\1: /" || true
+}
+
+# Écrit $3 = frontmatter neutre de $1 + champs Claude de $2 + corps de $1.
+gen_md() { # $1 = source, $2 = champs à ajouter, $3 = sortie
+  first="$(head -n 1 "$1")"
+  if [ "$first" != "---" ]; then echo "Erreur : $1 n'a pas de frontmatter." >&2; exit 1; fi
+  front="$(awk 'NR==1{next} /^---$/{exit} {print}' "$1")"
+  body="$(awk 'NR==1{next} f{print} /^---$/ && !f{f=1}' "$1")"
+  printf '%s\n' "$front" | grep -q '^name:' || { echo "Erreur : 'name' manquant dans $1" >&2; exit 1; }
+  printf '%s\n' "$front" | grep -q '^description:' || { echo "Erreur : 'description' manquant dans $1" >&2; exit 1; }
+  if [ "$DRY" = 1 ]; then say "  [dry-run] écrire $3"; return; fi
+  {
+    echo "---"
+    printf '%s\n' "$front"
+    [ -n "$2" ] && printf '%s\n' "$2"
+    echo "---"
+    printf '%s\n' "$body"
+  } > "$3.tmp"
+  mv "$3.tmp" "$3"
+}
+
 say "Génération des agents → connectors/claude/build/agents/"
 do_ mkdir -p "$BUILD"
 for src in "$REPO"/agents/*.md; do
   [ -f "$src" ] || continue
   name="$(basename "$src" .md)"
-  first="$(head -n 1 "$src")"
-  if [ "$first" != "---" ]; then echo "Erreur : $src n'a pas de frontmatter." >&2; exit 1; fi
-  front="$(awk 'NR==1{next} /^---$/{exit} {print}' "$src")"
-  body="$(awk 'NR==1{next} f{print} /^---$/ && !f{f=1}' "$src")"
-  printf '%s\n' "$front" | grep -q '^name:' || { echo "Erreur : 'name' manquant dans $src" >&2; exit 1; }
-  printf '%s\n' "$front" | grep -q '^description:' || { echo "Erreur : 'description' manquant dans $src" >&2; exit 1; }
-  extra=""
-  if [ -f "$CONF" ]; then
-    extra="$(grep -E "^$name\.[A-Za-z]+=" "$CONF" | sed -E "s/^$name\.([A-Za-z]+)=/\1: /" || true)"
-  fi
-  out="$BUILD/$name.md"
-  if [ "$DRY" = 1 ]; then
-    say "  [dry-run] écrire $out"
-  else
-    {
-      echo "---"
-      printf '%s\n' "$front"
-      [ -n "$extra" ] && printf '%s\n' "$extra"
-      echo "---"
-      printf '%s\n' "$body"
-    } > "$out.tmp"
-    mv "$out.tmp" "$out"
-  fi
+  gen_md "$src" "$(conf_fields "$AGENTS_CONF" "$name")" "$BUILD/$name.md"
 done
-
 # Agents générés devenus orphelins (agent supprimé du dépôt)
 if [ -d "$BUILD" ]; then
   for f in "$BUILD"/*.md; do
@@ -100,6 +105,37 @@ if [ -d "$BUILD" ]; then
     [ -f "$REPO/agents/$(basename "$f")" ] || do_ rm -f "$f"
   done
 fi
+
+# Skills : générés seulement s'ils ont des champs dans skills.conf, sinon liés directement.
+say "Génération des skills ayant des champs Claude → connectors/claude/build/skills/"
+for src in "$REPO"/skills/*/; do
+  [ -f "$src/SKILL.md" ] || continue
+  name="$(basename "$src")"
+  out="$SKILLS_BUILD/$name"
+  fields="$(conf_fields "$SKILLS_CONF" "$name")"
+  if [ -z "$fields" ]; then
+    [ -d "$out" ] && do_ rm -rf "$out"
+    continue
+  fi
+  [ -d "$out" ] && do_ rm -rf "$out"
+  do_ mkdir -p "$out"
+  gen_md "$src/SKILL.md" "$fields" "$out/SKILL.md"
+  for f in "$REPO/skills/$name"/*; do
+    [ "$(basename "$f")" = "SKILL.md" ] && continue
+    [ -e "$f" ] && do_ ln -s "$f" "$out/$(basename "$f")"
+  done
+done
+# Skills générés devenus orphelins (skill supprimé du dépôt)
+if [ -d "$SKILLS_BUILD" ]; then
+  for d in "$SKILLS_BUILD"/*/; do
+    [ -d "$d" ] || continue
+    [ -d "$REPO/skills/$(basename "$d")" ] || do_ rm -rf "$d"
+  done
+fi
+
+skill_source() { # dossier que ~/.claude/skills/<nom> doit viser
+  if [ -n "$(conf_fields "$SKILLS_CONF" "$1")" ]; then echo "$SKILLS_BUILD/$1"; else echo "$REPO/skills/$1"; fi
+}
 
 # --- Liens ------------------------------------------------------------------
 link_one() { # $1 = destination, $2 = source
@@ -172,7 +208,7 @@ ensure_dir "$CLAUDE_DIR/skills"
 for src in "$REPO"/skills/*/; do
   [ -f "$src/SKILL.md" ] || continue
   name="$(basename "$src")"
-  link_one "$CLAUDE_DIR/skills/$name" "$REPO/skills/$name"
+  link_one "$CLAUDE_DIR/skills/$name" "$(skill_source "$name")"
 done
 
 remove_orphans "$CLAUDE_DIR/agents"

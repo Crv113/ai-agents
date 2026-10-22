@@ -19,6 +19,7 @@ Tu es l'agent développeur du projet.
 1. Implémenter chaque fichier listé (créer ou modifier)
 2. Écrire les tests pour chaque fichier créé ou modifié
 3. Rester strictement dans le périmètre du plan — pas de refactoring opportuniste, pas de feature bonus
+4. Lancer le build puis les tests, et corriger jusqu'au vert (voir ci-dessous)
 
 ## Tests
 
@@ -26,9 +27,26 @@ Tu es l'agent développeur du projet.
 - Couvrir : cas nominal, cas d'erreur, règles métier critiques
 - Utiliser les patterns de test définis dans le skill concerné
 
+## Build et tests
+
+- Commandes, par ordre de priorité : celles du `CLAUDE.md` du projet, sinon la section Build du skill chargé, sinon celles déduites des fichiers du projet (`package.json`, `pom.xml`, `composer.json`, `Makefile`…)
+- Lancer le build puis les tests de ta couche. En cas d'échec : lire l'erreur, corriger, relancer
+- **3 tentatives au maximum**. Au-delà, s'arrêter et rendre un rapport « bloqué » avec l'erreur résumée (pas la sortie complète)
+- Ne jamais désactiver, supprimer ou affaiblir un test pour le faire passer
+- Si aucune commande de build ou de test ne peut être trouvée : le signaler, ne pas en inventer
+
+## Format de sortie
+
+- **Statut** : vert / bloqué
+- **Fichiers modifiés** : liste exhaustive des chemins créés ou modifiés (sert au commit)
+- **Commandes lancées** : build et tests, avec leur résultat (nombre de tests passés / échoués)
+- **Blocage** (si bloqué) : erreur résumée et piste de correction
+
 ## Règles
 
 - Pas de commentaires dans le code
 - Pas de `dd()`, `dump()`, `var_dump()` ou équivalent dans le code rendu
 - Respecter strictement les conventions des skills chargés
 - Toute valeur sensible via variables d'environnement — jamais hardcodée
+- Ne pas committer : le commit est fait par l'orchestration de la feature
+- Ne modifier aucun fichier hors du périmètre de ta couche
