@@ -46,17 +46,38 @@ def project_info(cwd):
     return {"root": root, "name": name}
 
 
-def tokens(path):
-    # Un même message peut apparaître sur plusieurs lignes : on garde sa dernière usage.
+def is_prompt(entry):
+    """Vrai pour un message de l'utilisateur qui ouvre un tour (pas un résultat d'outil)."""
+    if entry.get("type") != "user" or entry.get("isMeta") or entry.get("isSidechain"):
+        return False
+    content = (entry.get("message") or {}).get("content")
+    if isinstance(content, str):
+        return True
+    if isinstance(content, list):
+        return not any(isinstance(b, dict) and b.get("type") == "tool_result" for b in content)
+    return False
+
+
+def tokens(path, last_turn=False):
+    """Somme des usages du fichier de session, ou du dernier tour seulement.
+
+    Un même message apparaît sur plusieurs lignes : on garde sa dernière usage.
+    """
     usages = {}
     model = None
     try:
         with open(os.path.expanduser(path), encoding="utf-8") as f:
             for n, line in enumerate(f):
                 try:
-                    msg = json.loads(line).get("message") or {}
+                    entry = json.loads(line)
                 except ValueError:
                     continue
+                if last_turn and is_prompt(entry):
+                    usages = {}
+                    continue
+                if last_turn and entry.get("isSidechain"):
+                    continue
+                msg = entry.get("message") or {}
                 usage = msg.get("usage")
                 if not isinstance(usage, dict):
                     continue
@@ -73,20 +94,34 @@ def tokens(path):
     return total
 
 
+def current_feature(root, branch):
+    """Feature en cours : fichier .ai-agents/current écrit par /feature, sinon la branche."""
+    try:
+        with open(os.path.join(root, ".ai-agents", "current"), encoding="utf-8") as f:
+            m = re.search(r"F-\d{8}-\d{3}", f.read())
+            if m:
+                return m.group(0)
+    except OSError:
+        pass
+    m = re.search(r"F-\d{8}-\d{3}", branch or "")
+    return m.group(0) if m else None
+
+
 def build_event(data):
     cwd = data.get("cwd") or os.getcwd()
     branch = git(cwd, "branch", "--show-current")
-    feature = re.search(r"(F-\d{8}-\d{3})", branch or "")
+    project = project_info(cwd)
+    name = data.get("hook_event_name")
     event = {
         "v": 1,
         "ts": datetime.now(timezone.utc).isoformat(),
-        "event": data.get("hook_event_name"),
+        "event": name,
         "session_id": data.get("session_id"),
         "agent_id": data.get("agent_id"),
         "agent_type": data.get("agent_type"),
-        "project": project_info(cwd),
+        "project": project,
         "branch": branch or None,
-        "feature_id": feature.group(1) if feature else None,
+        "feature_id": current_feature(project["root"], branch),
     }
     if data.get("tool_name"):
         event["tool"] = {
@@ -94,8 +129,10 @@ def build_event(data):
             "use_id": data.get("tool_use_id"),
             "duration_ms": data.get("duration_ms"),
         }
-    if data.get("hook_event_name") == "SubagentStop" and data.get("agent_transcript_path"):
+    if name == "SubagentStop" and data.get("agent_transcript_path"):
         event["tokens"] = tokens(data["agent_transcript_path"])
+    if name == "Stop" and data.get("transcript_path"):
+        event["tokens"] = tokens(data["transcript_path"], last_turn=True)
     return event
 
 

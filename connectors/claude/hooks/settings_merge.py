@@ -8,7 +8,7 @@ import json
 import os
 import sys
 
-EVENTS = ["SubagentStart", "SubagentStop", "PreToolUse", "PostToolUse"]
+EVENTS = ["SubagentStart", "SubagentStop", "PreToolUse", "PostToolUse", "Stop"]
 SUFFIX = "/connectors/claude/hooks/emit.sh"
 
 
@@ -16,8 +16,13 @@ def is_ours(handler):
     return isinstance(handler, dict) and str(handler.get("command", "")).endswith(SUFFIX)
 
 
-def our_handler(emit):
-    return {"type": "command", "command": emit, "async": True, "timeout": 5}
+# Stop est synchrone : un hook async lancé en fin de tour peut être tué si la session se termine
+# juste après (mode non interactif), et le dernier tour serait perdu. Sans dashboard, il sort en 0,2 s.
+SYNC_EVENTS = {"Stop"}
+
+
+def our_handler(emit, event):
+    return {"type": "command", "command": emit, "async": event not in SYNC_EVENTS, "timeout": 5}
 
 
 def install(settings, emit):
@@ -30,11 +35,11 @@ def install(settings, emit):
             for i, handler in enumerate(group.get("hooks", [])):
                 if is_ours(handler):
                     found = True
-                    if handler != our_handler(emit):
-                        group["hooks"][i] = our_handler(emit)
+                    if handler != our_handler(emit, event):
+                        group["hooks"][i] = our_handler(emit, event)
                         changes.append(f"mise à jour du hook {event}")
         if not found:
-            groups.append({"matcher": "*", "hooks": [our_handler(emit)]})
+            groups.append({"matcher": "*", "hooks": [our_handler(emit, event)]})
             changes.append(f"ajout du hook {event}")
     return changes
 

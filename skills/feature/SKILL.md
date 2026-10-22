@@ -21,6 +21,7 @@ Demande de l'utilisateur : $ARGUMENTS
 3. Sinon, générer l'ID `F-YYYYMMDD-NNN` (date du jour, `NNN` = prochain numéro libre d'après `git branch -a --list 'feature/F-<date>-*'` sur les repos impactés). Annoncer l'ID.
 4. Créer `.ai-agents/features/<ID>/` à la racine du projet. Si `.ai-agents/` n'est pas déjà ignoré, ajouter la ligne `.ai-agents/` à `.git/info/exclude` (exclusion locale : ne pas modifier le `.gitignore` du projet).
 5. Écrire `status.md` (ID, demande, branche cible, étape courante) et le tenir à jour à chaque étape.
+6. Écrire l'ID seul dans `.ai-agents/current` (y compris lors d'une reprise) : il marque la feature en cours, pour que la consommation de la session et des agents lui soit rattachée.
 
 ## 1. Spec
 
@@ -69,4 +70,6 @@ Lancer l'agent `validator` avec : chemins de `spec.md`, `plan.md` et `test-repor
 2. Demander si l'utilisateur valide la feature et la création de la PR.
    - Oui → push de la branche, puis `gh pr create --base <branche cible>` (titre `<ID>: <résumé>`, corps = synthèse), une PR par repo impacté. Donner les URLs.
    - Non → appliquer les retours (coders, commit, review), puis reproposer.
-3. Mettre `status.md` à « terminé ».
+3. Mettre `status.md` à « terminé » et supprimer `.ai-agents/current`.
+
+Si l'utilisateur abandonne ou met la feature en pause : supprimer `.ai-agents/current` (une reprise le réécrira).
