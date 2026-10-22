@@ -49,5 +49,5 @@ Refonte du workflow d'agents pour Claude Code (spec → architect → coder → 
 - [x] **Phase 2** : flow (`/feature`, validations humaines, coder build + tests, reviewer grille + modèle, branche des PR).
 - [x] **Phase 3** : tester + validator générique.
 - [x] **Phase 4** : `/setup`.
-- [ ] **Phase 5** : hooks d'événements.
+- [x] **Phase 5** : hooks d'événements.
 - [ ] **Plus tard** : dashboard.

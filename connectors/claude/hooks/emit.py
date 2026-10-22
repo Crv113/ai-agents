@@ -1,0 +1,116 @@
+"""Hook ai-agents : lit l'événement Claude Code sur stdin et l'envoie au dashboard.
+
+Ne fait rien si le dashboard n'écoute pas. N'affiche rien, ne lève jamais d'erreur.
+Format de l'événement : docs/EVENTS.md.
+"""
+import json
+import os
+import re
+import socket
+import subprocess
+import sys
+import urllib.parse
+import urllib.request
+from datetime import datetime, timezone
+
+URL = os.environ.get("AI_AGENTS_DASHBOARD_URL", "http://127.0.0.1:7337/events")
+
+
+def dashboard_up():
+    u = urllib.parse.urlparse(URL)
+    try:
+        with socket.create_connection((u.hostname or "127.0.0.1", u.port or 80), timeout=0.2):
+            return True
+    except OSError:
+        return False
+
+
+def git(cwd, *args):
+    try:
+        out = subprocess.run(["git", "-C", cwd, *args], capture_output=True, text=True, timeout=1)
+        return out.stdout.strip() if out.returncode == 0 else ""
+    except Exception:
+        return ""
+
+
+def project_info(cwd):
+    root = git(cwd, "rev-parse", "--show-toplevel") or cwd
+    name = os.path.basename(root.rstrip("/")) or root
+    try:
+        with open(os.path.join(root, "CLAUDE.md"), encoding="utf-8") as f:
+            m = re.search(r"^Nom du projet\s*:\s*(.+?)\s*$", f.read(), re.M)
+            if m:
+                name = m.group(1)
+    except OSError:
+        pass
+    return {"root": root, "name": name}
+
+
+def tokens(path):
+    # Un même message peut apparaître sur plusieurs lignes : on garde sa dernière usage.
+    usages = {}
+    model = None
+    try:
+        with open(os.path.expanduser(path), encoding="utf-8") as f:
+            for n, line in enumerate(f):
+                try:
+                    msg = json.loads(line).get("message") or {}
+                except ValueError:
+                    continue
+                usage = msg.get("usage")
+                if not isinstance(usage, dict):
+                    continue
+                usages[msg.get("id") or f"ligne-{n}"] = usage
+                model = msg.get("model") or model
+    except OSError:
+        return None
+    total = {"input": 0, "output": 0, "cache_creation": 0, "cache_read": 0, "model": model}
+    for usage in usages.values():
+        total["input"] += usage.get("input_tokens", 0) or 0
+        total["output"] += usage.get("output_tokens", 0) or 0
+        total["cache_creation"] += usage.get("cache_creation_input_tokens", 0) or 0
+        total["cache_read"] += usage.get("cache_read_input_tokens", 0) or 0
+    return total
+
+
+def build_event(data):
+    cwd = data.get("cwd") or os.getcwd()
+    branch = git(cwd, "branch", "--show-current")
+    feature = re.search(r"(F-\d{8}-\d{3})", branch or "")
+    event = {
+        "v": 1,
+        "ts": datetime.now(timezone.utc).isoformat(),
+        "event": data.get("hook_event_name"),
+        "session_id": data.get("session_id"),
+        "agent_id": data.get("agent_id"),
+        "agent_type": data.get("agent_type"),
+        "project": project_info(cwd),
+        "branch": branch or None,
+        "feature_id": feature.group(1) if feature else None,
+    }
+    if data.get("tool_name"):
+        event["tool"] = {
+            "name": data.get("tool_name"),
+            "use_id": data.get("tool_use_id"),
+            "duration_ms": data.get("duration_ms"),
+        }
+    if data.get("hook_event_name") == "SubagentStop" and data.get("agent_transcript_path"):
+        event["tokens"] = tokens(data["agent_transcript_path"])
+    return event
+
+
+def main():
+    if not dashboard_up():
+        return
+    data = json.load(sys.stdin)
+    body = json.dumps(build_event(data)).encode("utf-8")
+    req = urllib.request.Request(URL, data=body, headers={"Content-Type": "application/json"}, method="POST")
+    urllib.request.urlopen(req, timeout=1).close()
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception:
+        pass
+    sys.exit(0)

@@ -75,8 +75,10 @@ connectors/claude/
   agents.conf             — champs propres à Claude Code par agent (model, disallowedTools…)
   skills.conf             — champs propres à Claude Code par skill (disable-model-invocation…)
   build/                  — généré par install.sh (ignoré par git)
+  hooks/                  — emit.sh/emit.py (événements) et settings_merge.py (fusion dans settings.json)
 install.sh / uninstall.sh — connecteur Claude Code
 docs/REFONTE.md           — feuille de route
+docs/EVENTS.md            — format des événements envoyés au dashboard
 ```
 
 ## Règles de format
@@ -104,7 +106,9 @@ Un seul clone, où l'on veut. Depuis le clone :
 ./uninstall.sh          # retire tout et restaure l'état précédent
 ```
 
-`install.sh` génère les agents au format Claude Code dans `connectors/claude/build/agents/`, puis crée un lien par agent (`~/.claude/agents/<nom>.md`) et par skill (`~/.claude/skills/<nom>`). Il sauvegarde ce qu'il remplace, demande avant toute suppression, et peut être relancé sans risque, y compris après un déplacement du clone. Les skills qui ont des champs dans `skills.conf` sont générés dans `connectors/claude/build/skills/`, les autres sont liés directement. **Relancer `install.sh` après avoir modifié un agent, `agents.conf`, `skills.conf` ou un skill listé dans `skills.conf`** (pas besoin pour les autres skills). Redémarrer Claude Code ensuite.
+`install.sh` génère les agents au format Claude Code dans `connectors/claude/build/agents/`, puis crée un lien par agent (`~/.claude/agents/<nom>.md`) et par skill (`~/.claude/skills/<nom>`). Il sauvegarde ce qu'il remplace, demande avant toute suppression, et peut être relancé sans risque, y compris après un déplacement du clone. Il ajoute aussi dans `~/.claude/settings.json` des **hooks d'événements** (`SubagentStart`, `SubagentStop`, `PreToolUse`, `PostToolUse`) pour le futur dashboard : asynchrones, silencieux, sans effet si le dashboard est éteint (format : `docs/EVENTS.md`). Le fichier est sauvegardé avant modification, seules nos entrées sont ajoutées, et `uninstall.sh` ne retire qu'elles. `./install.sh --no-hooks` saute cette étape ; sans `python3`, elle est ignorée.
+
+Les skills qui ont des champs dans `skills.conf` sont générés dans `connectors/claude/build/skills/`, les autres sont liés directement. **Relancer `install.sh` après avoir modifié un agent, `agents.conf`, `skills.conf` ou un skill listé dans `skills.conf`** (pas besoin pour les autres skills). Redémarrer Claude Code ensuite.
 
 ## Migration depuis la v1
 

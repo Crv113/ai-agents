@@ -61,7 +61,13 @@ sed -n 's/^created_dir=//p' "$STATE" | while IFS= read -r d; do
   fi
 done
 
-# 4. Fichiers générés et état
+# 4. Hooks : retrait de nos entrées seulement dans settings.json
+if command -v python3 >/dev/null 2>&1 && [ -f "$CLAUDE_DIR/settings.json" ]; then
+  flag=""; [ "$DRY" = 1 ] && flag="--dry-run"
+  python3 -I "$REPO/connectors/claude/hooks/settings_merge.py" uninstall "$CLAUDE_DIR/settings.json" $flag || true
+fi
+
+# 5. Fichiers générés et état
 if [ -d "$BUILD" ]; then
   say "suppression des agents générés : $BUILD"
   for f in "$BUILD"/agents/*.md; do [ -f "$f" ] && do_ rm -f "$f"; done

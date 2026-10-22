@@ -4,10 +4,12 @@
 set -eu
 
 DRY=0
+HOOKS=1
 for arg in "$@"; do
   case "$arg" in
     --dry-run) DRY=1 ;;
-    -h|--help) echo "Usage : ./install.sh [--dry-run]"; exit 0 ;;
+    --no-hooks) HOOKS=0 ;;
+    -h|--help) echo "Usage : ./install.sh [--dry-run] [--no-hooks]"; exit 0 ;;
     *) echo "Option inconnue : $arg" >&2; exit 1 ;;
   esac
 done
@@ -213,6 +215,33 @@ done
 
 remove_orphans "$CLAUDE_DIR/agents"
 remove_orphans "$CLAUDE_DIR/skills"
+
+# --- Hooks d'événements (settings.json) ------------------------------------
+SETTINGS="$CLAUDE_DIR/settings.json"
+EMIT="$CONNECTOR/hooks/emit.sh"
+if [ "$HOOKS" = 0 ]; then
+  say "Hooks : ignorés (--no-hooks)."
+elif ! command -v python3 >/dev/null 2>&1; then
+  say "Hooks : python3 introuvable, étape ignorée (les agents et skills fonctionnent sans)."
+else
+  say "Hooks d'événements → $SETTINGS"
+  rc=0
+  python3 -I "$CONNECTOR/hooks/settings_merge.py" install "$SETTINGS" "$EMIT" --dry-run >/dev/null || rc=$?
+  if [ "$rc" = 10 ]; then
+    if [ "$DRY" = 1 ]; then
+      python3 -I "$CONNECTOR/hooks/settings_merge.py" install "$SETTINGS" "$EMIT" --dry-run || true
+    else
+      if [ -f "$SETTINGS" ]; then
+        mkdir -p "$BACKUP_DIR"
+        cp -p "$SETTINGS" "$BACKUP_DIR/settings.json"
+        say "  sauvegarde : $BACKUP_DIR/settings.json"
+      fi
+      python3 -I "$CONNECTOR/hooks/settings_merge.py" install "$SETTINGS" "$EMIT" || true
+    fi
+  elif [ "$rc" != 0 ]; then
+    say "  settings.json illisible (JSON invalide ?) : laissé tel quel, hooks non installés."
+  fi
+fi
 
 # --- Écriture de l'état -----------------------------------------------------
 if [ "$DRY" = 0 ]; then
