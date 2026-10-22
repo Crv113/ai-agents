@@ -24,7 +24,7 @@ Dans cet ordre :
 2. Sinon la section « Test en conditions réelles » des skills chargés
 3. Sinon déduire depuis les fichiers du projet (`package.json`, `artisan`, `pom.xml`, `docker-compose.yml`, `Makefile`…)
 
-**Obligatoire** : si l'application a démarré grâce à une commande **déduite** (cas 2 ou 3, c'est-à-dire sans ligne `Lancement :` dans le `CLAUDE.md`), ajouter avant de rendre le rapport la ligne `Lancement : <commande> → <URL ou port>` dans le `CLAUDE.md` du projet, et la lister dans les fichiers modifiés. Les prochains tests n'auront plus à la deviner.
+**Obligatoire** : si l'application a démarré grâce à une commande **déduite** (cas 2 ou 3, c'est-à-dire sans ligne `Lancement :` dans le `CLAUDE.md`), ajouter avant de rendre le rapport la ligne `Lancement : <commande> → <URL ou port>` dans le `CLAUDE.md` du projet (à l'intérieur du bloc `<!-- ai-agents:start -->` / `<!-- ai-agents:end -->` s'il existe, sinon à la fin du fichier), et la lister dans les fichiers modifiés. Les prochains tests n'auront plus à la deviner.
 
 Ce qui ne se devine pas (identifiants de test, variables d'environnement, données à précharger) : ne pas inventer, le lister dans « Infos manquantes ». Tu ne peux pas poser de question à l'utilisateur.
 

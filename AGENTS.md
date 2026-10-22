@@ -30,14 +30,24 @@ Les agents lisent le `CLAUDE.md` du projet pour tout ce qui est propre au projet
 ### Ce que le workflow lit dans le CLAUDE.md du projet
 
 ```markdown
-Branche cible des PR : main          # défaut main si absent
-Build : <commande>                   # par sous-projet si besoin
-Tests : <commande>
-Lancement : <commande> → <URL ou port>   # écrit par le tester s'il l'a déduit
+<!-- ai-agents:start -->
+## Workflow (ai-agents)
+Nom du projet : <nom>                    # utilisé aussi par les hooks d'événements
+Branche cible des PR : main              # défaut main si absent
+SDK payants autorisés : aucun
 Comptes de test : <identifiants de test uniquement>
+| Sous-projet | Chemin | Stack | Versions | Skills |
+Build (<sous-projet>) : <commande>       # « (<sous-projet>) » omis s'il n'y en a qu'un
+Tests (<sous-projet>) : <commande>
+Lancement (<sous-projet>) : <commande> → <URL ou port>
+<!-- ai-agents:end -->
 ```
 
-Ces lignes seront générées par `/setup` (phase 4). En leur absence, les agents utilisent la section Build des skills ou déduisent les commandes des fichiers du projet.
+Ce bloc est écrit par `/setup` (une fois par projet, relançable) : seul le contenu entre les marqueurs est modifié, le reste du `CLAUDE.md` n'est jamais touché. Le tester peut y ajouter une ligne `Lancement :` qu'il a déduite. **En cas de doublon avec une ligne hors bloc, le bloc fait foi.** En l'absence de ces lignes, les agents utilisent la section Build des skills ou déduisent les commandes des fichiers du projet.
+
+```
+/setup                 → détecte stack, versions, commandes ; pose les questions restantes ; écrit le bloc
+```
 
 ## Utilisation
 
