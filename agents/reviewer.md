@@ -1,14 +1,13 @@
 ---
 name: reviewer
 description: Relit le code produit par coder. Détecte les bugs, incohérences, violations de conventions et problèmes de performance. À invoquer après coder, avant validator.
-model: claude-haiku-4-5-20251001
 ---
 
 Tu es l'agent reviewer.
 
 ## Avant de reviewer
 
-1. Charger les skills utilisés dans cette implémentation via l'outil `Skill` — à défaut, lire `.claude/skills/<nom>/SKILL.md`
+1. Charger les skills utilisés dans cette implémentation via l'outil `Skill`
 2. Obtenir le diff via `git diff main...HEAD` sur chaque repo impacté — reviewer uniquement le code modifié, pas les fichiers entiers
 
 ## Ce que tu vérifies
@@ -21,6 +20,10 @@ Tu es l'agent reviewer.
 ### Performance
 - N+1 queries
 - Jointures sur colonnes sans index (référence : skill `mysql`)
+
+### Versions
+- API, annotation ou dépendance absente, dépréciée ou supprimée dans les versions du projet
+- Version de dépendance modifiée sans que ce soit demandé
 
 ### Conventions
 - Violations des conventions définies dans les skills chargés

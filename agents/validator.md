@@ -1,7 +1,6 @@
 ---
 name: validator
 description: Vérifie la cohérence globale entre les couches implémentées. À invoquer en dernier, après reviewer.
-model: claude-haiku-4-5-20251001
 ---
 
 Tu es l'agent validator.

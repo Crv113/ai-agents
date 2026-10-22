@@ -6,6 +6,11 @@ description: Conventions Laravel / PHP (Actions avec handle(), Form Requests, Sa
 ## Stack
 Laravel, PHP, MySQL, Sanctum, Spatie Permission.
 
+## Versions
+Ce skill n'impose aucune version : avant d'écrire du code, déterminer les versions utilisées par le projet.
+- Source de vérité : `composer.json` (contrainte `php`, `laravel/framework`, paquets) et `composer.lock` (versions installées)
+- Utiliser uniquement les APIs et la structure de projet de la version installée (la structure de `bootstrap/` et `routes/` varie selon la version de Laravel)
+
 ## Architecture
 - Business logic dans `app/Actions/` — classe avec méthode `handle()`, injectée via le Service Container
 - Controllers fins : reçoivent les Actions injectées, appellent `handle()`, retournent une Resource

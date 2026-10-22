@@ -4,7 +4,10 @@ description: Conventions Java / Spring Boot, toutes versions (structure des pack
 ---
 
 ## Stack
-Java + Spring Boot + Maven. Ce skill n'impose aucune version : avant d'écrire du code, déterminer les versions utilisées par le projet.
+Java + Spring Boot + Maven.
+
+## Versions
+Ce skill n'impose aucune version : avant d'écrire du code, déterminer les versions utilisées par le projet.
 - Source de vérité : le `pom.xml` (version du parent `spring-boot-starter-parent`, propriété `java.version`)
 - Le `CLAUDE.md` du projet peut aussi les mentionner — en cas d'écart, le `pom.xml` fait foi
 - Utiliser les APIs, annotations et dépendances disponibles dans ces versions — ne pas introduire de pattern déprécié ou supprimé dans la version du projet

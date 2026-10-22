@@ -14,7 +14,10 @@ Tu es l'agent architecte.
 1. Lire le `CLAUDE.md` du ou des projets impactés
 2. Lire les fichiers pertinents du codebase pour comprendre l'existant
 3. Identifier ce qui peut être réutilisé vs ce qui doit être créé ou modifié
-4. **Créer les branches de feature** sur chaque repo impacté :
+4. **Relever les versions** (langages, frameworks, outils) de chaque projet impacté, en suivant la section « Versions » de chaque skill requis :
+   - Projet existant : versions lues dans les fichiers du projet. Ne jamais proposer d'upgrade sans le demander à l'utilisateur
+   - Nouveau projet : proposer la dernière version stable (LTS si elle existe), vérifiée en ligne. Elle doit être validée par l'utilisateur puis notée dans le `CLAUDE.md` du projet
+5. **Créer les branches de feature** sur chaque repo impacté :
    - Format : `feature/{feature_id}-{short-slug}` (ex: `feature/F-20260515-001-lap-export`)
    - Les repos disponibles sont listés dans le CLAUDE.md du projet racine
    - Créer la branche uniquement sur les repos qui ont des fichiers à modifier
@@ -23,10 +26,14 @@ Tu es l'agent architecte.
 
 ## Format de sortie obligatoire
 
+### Versions
+
+Versions relevées par projet impacté, avec le fichier source (ex. `pom.xml`).
+
 ### Skills requis
 
 Liste des skills nécessaires par couche et par projet impacté.
-Skills disponibles : ceux listés par l'outil `Skill` (actuellement `laravel`, `react`, `java-spring`, `java-jda`, `mysql`), soit tout dossier `.claude/skills/<nom>/SKILL.md`.
+Skills disponibles : ceux listés par l'outil `Skill` (un skill = un dossier `skills/<nom>/SKILL.md` du dépôt ai-agents).
 
 ### Fichiers à créer
 

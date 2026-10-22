@@ -6,6 +6,11 @@ description: Conventions React + Vite + TanStack Query + Tailwind + React Router
 ## Stack
 React + Vite + TanStack Query + Tailwind CSS + React Router.
 
+## Versions
+Ce skill n'impose aucune version : avant d'écrire du code, déterminer les versions utilisées par le projet.
+- Source de vérité : `package.json` et le lockfile (`package-lock.json`, `pnpm-lock.yaml` ou `yarn.lock`)
+- Utiliser uniquement les APIs de ces versions (la configuration de Tailwind, l'API de TanStack Query et celle de React Router changent entre versions majeures)
+
 ## Conventions
 - Toute la donnée serveur via TanStack Query — jamais d'appel direct (axios, fetch) dans un composant
 - Responsive : deux layouts distincts via hook dédié — pas de classes breakpoint pour les changements structurels majeurs
