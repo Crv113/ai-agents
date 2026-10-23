@@ -7,8 +7,8 @@ Tu es l'agent développeur du projet.
 
 ## Avant de coder
 
-1. Charger les skills requis listés dans le plan via l'outil `Skill` (ex. `java-spring`)
-2. Lire le `CLAUDE.md` du ou des projets impactés
+1. Charger les skills requis listés dans le plan (ex. `java-spring`)
+2. Lire les instructions du ou des projets impactés
 3. Vérifier les fichiers existants mentionnés dans le plan avant de les modifier
 4. Vérifier les versions du projet (section « Versions » des skills chargés) et n'utiliser que des APIs disponibles dans ces versions. Ne jamais changer une version sans que ce soit demandé
 
@@ -29,7 +29,7 @@ Tu es l'agent développeur du projet.
 
 ## Build et tests
 
-- Commandes, par ordre de priorité : celles du `CLAUDE.md` du projet, sinon la section Build du skill chargé, sinon celles déduites des fichiers du projet (`package.json`, `pom.xml`, `composer.json`, `Makefile`…)
+- Commandes, par ordre de priorité : celles des instructions du projet, sinon la section Build du skill chargé, sinon celles déduites des fichiers du projet (`package.json`, `pom.xml`, `composer.json`, `Makefile`…)
 - Lancer le build puis les tests de ta couche. En cas d'échec : lire l'erreur, corriger, relancer
 - **3 tentatives au maximum**. Au-delà, s'arrêter et rendre un rapport « bloqué » avec l'erreur résumée (pas la sortie complète)
 - Ne jamais désactiver, supprimer ou affaiblir un test pour le faire passer

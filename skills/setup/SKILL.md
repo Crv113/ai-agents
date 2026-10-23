@@ -1,23 +1,27 @@
 ---
 name: setup
-description: Prépare un projet pour le workflow ai-agents (à lancer une fois par projet, ou après un changement de stack) en détectant stack, versions et commandes build/test/lancement, en posant les questions restantes et en écrivant le bloc ai-agents du CLAUDE.md du projet. Lancé par l'utilisateur avec /setup.
+description: Prépare un projet pour le workflow ai-agents (à lancer une fois par projet, ou après un changement de stack) en détectant stack, versions et commandes build/test/lancement, en posant les questions restantes et en écrivant le bloc ai-agents dans les instructions du projet. Lancé par l'utilisateur avec /setup.
 ---
 
 Tu prépares le projet courant pour le workflow ai-agents. Tu tournes dans la session principale : tu peux poser des questions à l'utilisateur. Tu ne lances aucun agent et tu ne modifies aucun fichier de code.
 
-But : un bloc à jour dans le `CLAUDE.md` du projet, que les agents lisent (branche cible des PR, commandes, comptes de test, SDK autorisés, versions).
+But : un bloc à jour dans les instructions du projet, que les agents lisent (branche cible des PR, commandes, comptes de test, SDK autorisés, versions).
 
 ## Règles
 
 - **Déduire d'abord, demander ensuite** : ne poser que ce qui ne peut pas se lire dans le projet, en une seule série de questions, chacune avec une proposition par défaut
-- **Ne jamais modifier le reste du `CLAUDE.md`** : seul le bloc entre `<!-- ai-agents:start -->` et `<!-- ai-agents:end -->` est écrit
+- **Ne jamais modifier le reste du fichier d'instructions** : seul le bloc entre `<!-- ai-agents:start -->` et `<!-- ai-agents:end -->` est écrit
 - Montrer le bloc et attendre la confirmation avant d'écrire. Ne pas committer
 - Aucune version imposée : les versions sont lues dans le projet (sections « Versions » des skills)
 
-## 1. Racine et ancien lien v1
+## 1. Racine et fichier d'instructions
 
 1. Racine du projet : `git rev-parse --show-toplevel` (sinon le dossier courant)
-2. Si `.claude` à la racine est un **lien symbolique** vers un dossier `ai-agents/.claude` : le signaler (les agents du projet masquent ceux installés globalement) et proposer de **retirer le lien uniquement** (`rm .claude`, jamais sa cible). Ne le faire qu'après accord explicite
+2. **Fichier où écrire le bloc**, dans cet ordre :
+   - `AGENTS.md` existe à la racine → `AGENTS.md`
+   - sinon, le projet a déjà un fichier d'instructions propre à l'outil (projet de l'ancienne version du workflow) → ce fichier, pour rester compatible
+   - sinon (nouveau projet) → créer `AGENTS.md`
+3. Appliquer les étapes propres à l'outil indiquées en fin de skill (lien entre son fichier d'instructions et `AGENTS.md`, ancienne installation à nettoyer)
 
 ## 2. Sous-projets et stack
 
@@ -67,11 +71,11 @@ Lancement (<sous-projet>) : <commande> → <URL ou port>
 ```
 
 1. Montrer le bloc complet à l'utilisateur et attendre sa confirmation
-2. `CLAUDE.md` absent → le créer avec un titre (`# <nom>`) puis le bloc
+2. Fichier d'instructions choisi absent → le créer avec un titre (`# <nom>`) puis le bloc
 3. Bloc présent → remplacer **uniquement** le contenu entre les deux marqueurs
 4. Bloc absent → l'ajouter à la fin du fichier, séparé par une ligne vide
 5. Les lignes déjà présentes **hors bloc** qui ont le même rôle (ex. une ancienne ligne `Branche cible des PR :`) : les signaler à l'utilisateur, ne pas les supprimer soi-même
 
 ## 6. Fin
 
-Résumer : ce qui a été détecté, ce qui a été demandé, le fichier écrit. Rappeler que `CLAUDE.md` n'est pas committé et que `/feature` peut maintenant être utilisé.
+Résumer : ce qui a été détecté, ce qui a été demandé, le fichier écrit. Rappeler que le fichier d'instructions n'est pas committé et que `/feature` peut maintenant être utilisé.

@@ -7,7 +7,7 @@ Tu es l'agent de spécification.
 
 ## Avant de spécifier
 
-Lire le `CLAUDE.md` du ou des projets impactés pour connaître la stack, les règles métier et les conventions en vigueur.
+Lire les instructions du ou des projets impactés pour connaître la stack, les règles métier et les conventions en vigueur.
 
 ## Ton rôle
 
@@ -33,7 +33,7 @@ Description claire de ce que la feature doit accomplir.
 
 ### Projets impactés
 
-Liste des sous-projets concernés et les skills requis pour chacun (référence : CLAUDE.md du projet racine).
+Liste des sous-projets concernés et les skills requis pour chacun (référence : instructions du projet racine).
 
 ### Données
 
@@ -70,5 +70,5 @@ Points ambigus qui nécessitent une décision avant d'implémenter.
 
 - Ne suppose rien d'ambigu — liste-le dans "Questions ouvertes"
 - Reste factuel et technique
-- Si la feature touche des données critiques, rappelle les règles métier trouvées dans le CLAUDE.md du projet
-- **SDK externes payants** : ne jamais les inclure dans les specs sauf si le CLAUDE.md du projet l'autorise explicitement
+- Si la feature touche des données critiques, rappelle les règles métier trouvées dans les instructions du projet
+- **SDK externes payants** : ne jamais les inclure dans les specs sauf si les instructions du projet l'autorisent explicitement

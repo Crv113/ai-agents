@@ -19,7 +19,7 @@ Ce skill n'impose aucune version : avant d'écrire du code, déterminer les vers
 ## Auth
 - Deux types classiques : `auth:sanctum` (utilisateurs) et service-to-service via API key
 - Rôles admin imbriqués dans l'auth utilisateur
-- Consulter le CLAUDE.md du projet pour les noms exacts des middlewares custom
+- Consulter les instructions du projet pour les noms exacts des middlewares custom
 
 ## Conventions
 - Requêtes bulk obligatoires pour les listes — pas de N+1
@@ -28,10 +28,10 @@ Ce skill n'impose aucune version : avant d'écrire du code, déterminer les vers
 ## Tests
 - Un test Feature par endpoint dans `tests/Feature/`
 - `RefreshDatabase` + factories pour les données de test
-- Tester : cas nominal, 401/403/422, règles métier critiques définies dans le CLAUDE.md du projet
+- Tester : cas nominal, 401/403/422, règles métier critiques définies dans les instructions du projet
 - Avant d'écrire ou de lancer des tests : vérifier que `phpunit.xml` définit un `DB_DATABASE` distinct de la base principale (ex: `myapp_test`). Bloquer et alerter si ce n'est pas le cas.
 
-## À lire dans le CLAUDE.md du projet
+## À lire dans les instructions du projet
 - Resources existantes à réutiliser
 - Middlewares custom et leurs noms
 - Règles métier à appliquer dans les requêtes
@@ -39,12 +39,12 @@ Ce skill n'impose aucune version : avant d'écrire du code, déterminer les vers
 ## Test en conditions réelles
 - Lancement : `php artisan serve` (défaut `http://127.0.0.1:8000`), ou le service web du `docker-compose.yml` s'il existe
 - Requêtes HTTP (`curl`) sur chaque endpoint de la feature : cas nominal, 401 sans token, 403 avec un compte sans droit, 422 avec un payload invalide
-- Auth : uniquement les comptes de test du `CLAUDE.md` du projet (token Sanctum obtenu via la route de login de test)
+- Auth : uniquement les comptes de test des instructions du projet (token Sanctum obtenu via la route de login de test)
 - Base : uniquement la base de test. Vérifier dans `.env` / `phpunit.xml` que ce n'est pas la base principale avant toute requête qui écrit
 - Ne jamais lancer `migrate:fresh`, `migrate:refresh`, `db:wipe` ni de seed non idempotent
 
 ## Points de cohérence
 - Chaque nouveau champ ou table utilisé dans le code a une migration
-- Chaque route protégée a le middleware attendu (`auth:sanctum`, rôle, middleware custom du `CLAUDE.md` du projet)
+- Chaque route protégée a le middleware attendu (`auth:sanctum`, rôle, middleware custom des instructions du projet)
 - Les Resources renvoient tous les champs consommés par les autres couches, avec les mêmes noms
 - Les Form Requests valident les champs envoyés par le front

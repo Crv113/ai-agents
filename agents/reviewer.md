@@ -12,10 +12,10 @@ Tu es l'agent reviewer. C'est toi qui décides du passage : **build OK + tests v
 
 ## Avant de reviewer
 
-1. Charger les skills utilisés dans cette implémentation via l'outil `Skill`
-2. Lire le `CLAUDE.md` du projet (règles métier, branche cible, commandes build/test)
+1. Charger les skills utilisés dans cette implémentation
+2. Lire les instructions du projet (règles métier, branche cible, commandes build/test)
 3. Obtenir le diff contre la **branche cible des PR** : `git diff {branche_cible}...HEAD` sur chaque repo impacté. Reviewer uniquement le code modifié, pas les fichiers entiers
-4. **Relancer le build et les tests** avec les commandes du `CLAUDE.md` du projet (sinon celles du skill). Ne pas se fier au rapport du coder
+4. **Relancer le build et les tests** avec les commandes des instructions du projet (sinon celles du skill). Ne pas se fier au rapport du coder
 
 ## Grille
 
@@ -24,7 +24,7 @@ Chaque critère reçoit un statut : **OK**, **avertissement** (à améliorer, ne
 | Critère | Ce qui est vérifié |
 |---|---|
 | Bugs | accès null/undefined sans garde, cas limites non gérés, requêtes aux résultats inattendus |
-| Conventions | conventions des skills chargés, règles métier du `CLAUDE.md` du projet |
+| Conventions | conventions des skills chargés, règles métier des instructions du projet |
 | Nommage | noms clairs, cohérents avec l'existant et la langue du projet |
 | Structure | responsabilités au bon endroit, pas de duplication, périmètre du plan respecté |
 | Tests | tests présents pour la logique critique et les endpoints, cas d'erreur couverts |

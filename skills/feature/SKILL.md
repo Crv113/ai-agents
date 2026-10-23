@@ -3,7 +3,7 @@ name: feature
 description: Cycle complet d'une feature transversale (spec → architect → coder → reviewer + tester → validator → PR) avec validation humaine de la spec et du plan. Lancé par l'utilisateur avec /feature <demande>, ou /feature <ID> pour reprendre une feature.
 ---
 
-Tu orchestres le cycle d'une feature dans la session principale. Tu délègues tout aux agents, tu ne codes jamais. Les seules actions que tu fais toi-même : lire le `CLAUDE.md` du projet, gérer le dossier de la feature, committer, et créer la PR après accord.
+Tu orchestres le cycle d'une feature dans la session principale. Tu délègues tout aux agents, tu ne codes jamais. Les seules actions que tu fais toi-même : lire les instructions du projet, gérer le dossier de la feature, committer, et créer la PR après accord.
 
 Demande de l'utilisateur : $ARGUMENTS
 
@@ -16,7 +16,7 @@ Demande de l'utilisateur : $ARGUMENTS
 
 ## 0. Préparation
 
-1. Lire le `CLAUDE.md` du projet : sous-projets, stack, **branche cible des PR** (ligne `Branche cible des PR : …`, défaut `main`), commandes build/test.
+1. Lire les instructions du projet : sous-projets, stack, **branche cible des PR** (ligne `Branche cible des PR : …`, défaut `main`), commandes build/test.
 2. **Reprise** : si la demande est un ID existant (`F-YYYYMMDD-NNN`) et que `.ai-agents/features/<ID>/` existe, lire `status.md` et reprendre à l'étape indiquée.
 3. Sinon, générer l'ID `F-YYYYMMDD-NNN` (date du jour, `NNN` = prochain numéro libre d'après `git branch -a --list 'feature/F-<date>-*'` sur les repos impactés). Annoncer l'ID.
 4. Créer `.ai-agents/features/<ID>/` à la racine du projet. Si `.ai-agents/` n'est pas déjà ignoré, ajouter la ligne `.ai-agents/` à `.git/info/exclude` (exclusion locale : ne pas modifier le `.gitignore` du projet).
@@ -54,8 +54,8 @@ Lancer **en parallèle** :
 - l'agent `tester` avec : chemins de `spec.md` et `plan.md`, skills utilisés, chemin de sortie `.ai-agents/features/<ID>/test-report.md`
 
 Puis :
-1. **Infos manquantes du tester** (identifiants de test, variables d'env…) → les demander à l'utilisateur, les écrire dans le `CLAUDE.md` du projet, relancer le tester.
-2. **Fichiers modifiés par le tester** (tests E2E, ligne `Lancement :` du `CLAUDE.md`) → les committer, puis faire relire **uniquement ces fichiers** par le reviewer.
+1. **Infos manquantes du tester** (identifiants de test, variables d'env…) → les demander à l'utilisateur, les écrire dans les instructions du projet, relancer le tester.
+2. **Fichiers modifiés par le tester** (tests E2E, ligne `Lancement :` des instructions du projet) → les committer, puis faire relire **uniquement ces fichiers** par le reviewer.
 3. **Passage** = reviewer OK (build OK + tests verts + note ≥ 7/10) **et** aucun critère « échoué » dans `test-report.md`. Les critères « non testé » ne bloquent pas mais figurent dans la synthèse.
 4. Pas de passage → renvoyer les bloquants du reviewer et les critères échoués du tester aux coders concernés, committer, relancer reviewer et tester.
 5. **Au bout de 3 tours sans passage** (reviewer et tester confondus) : s'arrêter, présenter les derniers rapports et demander à l'utilisateur comment continuer.

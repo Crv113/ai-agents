@@ -23,6 +23,7 @@ BUILD="$CONNECTOR/build/agents"
 SKILLS_BUILD="$CONNECTOR/build/skills"
 AGENTS_CONF="$CONNECTOR/agents.conf"
 SKILLS_CONF="$CONNECTOR/skills.conf"
+CONTEXT="$CONNECTOR/context.md"
 STAMP="$(date +%Y%m%d-%H%M%S)"
 BACKUP_DIR="$STATE_DIR/backups/$STAMP"
 
@@ -74,8 +75,9 @@ conf_fields() { # $1 = fichier conf, $2 = nom
   grep -E "^$2\.[A-Za-z-]+=" "$1" | sed -E "s/^$2\.([A-Za-z-]+)=/\1: /" || true
 }
 
-# Écrit $3 = frontmatter neutre de $1 + champs Claude de $2 + corps de $1.
-gen_md() { # $1 = source, $2 = champs à ajouter, $3 = sortie
+# Écrit $3 = frontmatter neutre de $1 + champs Claude de $2 + corps de $1
+# + contexte Claude (context.md commun, puis context/<nom>.md s'il existe).
+gen_md() { # $1 = source, $2 = champs à ajouter, $3 = sortie, $4 = nom
   first="$(head -n 1 "$1")"
   if [ "$first" != "---" ]; then echo "Erreur : $1 n'a pas de frontmatter." >&2; exit 1; fi
   front="$(awk 'NR==1{next} /^---$/{exit} {print}' "$1")"
@@ -89,6 +91,9 @@ gen_md() { # $1 = source, $2 = champs à ajouter, $3 = sortie
     [ -n "$2" ] && printf '%s\n' "$2"
     echo "---"
     printf '%s\n' "$body"
+    for ctx in "$CONTEXT" "$CONNECTOR/context/$4.md"; do
+      [ -f "$ctx" ] && { echo; cat "$ctx"; }
+    done
   } > "$3.tmp"
   mv "$3.tmp" "$3"
 }
@@ -98,7 +103,7 @@ do_ mkdir -p "$BUILD"
 for src in "$REPO"/agents/*.md; do
   [ -f "$src" ] || continue
   name="$(basename "$src" .md)"
-  gen_md "$src" "$(conf_fields "$AGENTS_CONF" "$name")" "$BUILD/$name.md"
+  gen_md "$src" "$(conf_fields "$AGENTS_CONF" "$name")" "$BUILD/$name.md" "$name"
 done
 # Agents générés devenus orphelins (agent supprimé du dépôt)
 if [ -d "$BUILD" ]; then
@@ -115,13 +120,13 @@ for src in "$REPO"/skills/*/; do
   name="$(basename "$src")"
   out="$SKILLS_BUILD/$name"
   fields="$(conf_fields "$SKILLS_CONF" "$name")"
-  if [ -z "$fields" ]; then
+  if [ -z "$fields" ] && [ ! -f "$CONNECTOR/context/$name.md" ]; then
     [ -d "$out" ] && do_ rm -rf "$out"
     continue
   fi
   [ -d "$out" ] && do_ rm -rf "$out"
   do_ mkdir -p "$out"
-  gen_md "$src/SKILL.md" "$fields" "$out/SKILL.md"
+  gen_md "$src/SKILL.md" "$fields" "$out/SKILL.md" "$name"
   for f in "$REPO/skills/$name"/*; do
     [ "$(basename "$f")" = "SKILL.md" ] && continue
     [ -e "$f" ] && do_ ln -s "$f" "$out/$(basename "$f")"
@@ -136,7 +141,11 @@ if [ -d "$SKILLS_BUILD" ]; then
 fi
 
 skill_source() { # dossier que ~/.claude/skills/<nom> doit viser
-  if [ -n "$(conf_fields "$SKILLS_CONF" "$1")" ]; then echo "$SKILLS_BUILD/$1"; else echo "$REPO/skills/$1"; fi
+  if [ -n "$(conf_fields "$SKILLS_CONF" "$1")" ] || [ -f "$CONNECTOR/context/$1.md" ]; then
+    echo "$SKILLS_BUILD/$1"
+  else
+    echo "$REPO/skills/$1"
+  fi
 }
 
 # --- Liens ------------------------------------------------------------------

@@ -13,7 +13,7 @@ Ce skill n'impose aucune version : avant d'écrire du SQL, déterminer la versio
 - Utiliser sous-requêtes ou CTEs pour les classements et agrégats complexes
 - Vérifier l'existence d'un index avant de filtrer ou joindre sur une colonne d'une grande table
 
-## À lire dans le CLAUDE.md du projet
+## À lire dans les instructions du projet
 - Index existants sur les tables principales
 - Règles métier SQL spécifiques au domaine
 

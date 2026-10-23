@@ -17,7 +17,7 @@ ai-agents/          → workflow (comment travailler)
   agents/           → comportement des agents
   skills/           → conventions par langage/framework
 
-{projet}/CLAUDE.md  → règles du projet (quoi respecter)
+{projet}/AGENTS.md  → instructions du projet (quoi respecter)
   - liste des sous-projets et leur stack (avec versions)
   - règles métier spécifiques au domaine
   - conventions de code propres au projet
@@ -25,9 +25,17 @@ ai-agents/          → workflow (comment travailler)
   - autorisations SDK externes (si applicable)
 ```
 
-Les agents lisent le `CLAUDE.md` du projet pour tout ce qui est propre au projet. Aucune règle de domaine ni aucun chemin propre à un projet dans les agents ou les skills.
+Les agents lisent les **instructions du projet** pour tout ce qui est propre au projet. Aucune règle de domaine ni aucun chemin propre à un projet dans les agents ou les skills.
 
-### Ce que le workflow lit dans le CLAUDE.md du projet
+### Termes neutres
+
+Les agents et skills n'emploient aucun nom propre à un outil. Ils disent « les instructions du projet », « charger le skill X », « lancer l'agent X », « poser une question à l'utilisateur ». Le connecteur traduit ces termes pour l'outil : `connectors/claude/context.md` est ajouté par `install.sh` à la fin de chaque agent et skill généré (`connectors/claude/context/<nom>.md` en complément pour un élément précis, ex. `/setup`).
+
+Instructions du projet :
+- **Format cible** : `AGENTS.md` à la racine du projet (standard lu par la plupart des outils). Côté Claude Code, `CLAUDE.md` contient `@AGENTS.md` (ajouté par `/setup` après accord)
+- **Compatibilité v1 (provisoire)** : un projet qui n'a qu'un `CLAUDE.md` garde son bloc dans `CLAUDE.md`. À retirer plus tard, quand tous les projets seront passés à `AGENTS.md`
+
+### Ce que le workflow lit dans les instructions du projet
 
 ```markdown
 <!-- ai-agents:start -->
@@ -43,7 +51,7 @@ Lancement (<sous-projet>) : <commande> → <URL ou port>
 <!-- ai-agents:end -->
 ```
 
-Ce bloc est écrit par `/setup` (une fois par projet, relançable) : seul le contenu entre les marqueurs est modifié, le reste du `CLAUDE.md` n'est jamais touché. Le tester peut y ajouter une ligne `Lancement :` qu'il a déduite. **En cas de doublon avec une ligne hors bloc, le bloc fait foi.** En l'absence de ces lignes, les agents utilisent la section Build des skills ou déduisent les commandes des fichiers du projet.
+Ce bloc est écrit par `/setup` (une fois par projet, relançable) : seul le contenu entre les marqueurs est modifié, le reste du fichier n'est jamais touché. Le tester peut y ajouter une ligne `Lancement :` qu'il a déduite. **En cas de doublon avec une ligne hors bloc, le bloc fait foi.** En l'absence de ces lignes, les agents utilisent la section Build des skills ou déduisent les commandes des fichiers du projet.
 
 ```
 /setup                 → détecte stack, versions, commandes ; pose les questions restantes ; écrit le bloc
@@ -74,6 +82,8 @@ skills/<nom>/SKILL.md     — un skill au format standard Agent Skills (name, de
 connectors/claude/
   agents.conf             — champs propres à Claude Code par agent (model, disallowedTools…)
   skills.conf             — champs propres à Claude Code par skill (disable-model-invocation…)
+  context.md              — traduction des termes neutres pour Claude Code, ajoutée aux fichiers générés
+  context/<nom>.md        — complément pour un agent ou skill précis (ex. setup.md)
   build/                  — généré par install.sh (ignoré par git)
   hooks/                  — emit.sh/emit.py (événements) et settings_merge.py (fusion dans settings.json)
 install.sh / uninstall.sh — connecteur Claude Code
@@ -92,7 +102,7 @@ docs/EVENTS.md            — format des événements envoyés au dashboard
 Aucun agent ni skill n'impose de version de langage, framework ou outil.
 
 - **Projet existant** : les versions sont lues dans les fichiers du projet (`pom.xml`, `composer.json`, `package.json`, lockfiles…). On écrit du code compatible avec ces versions. Jamais d'upgrade sans le demander à l'utilisateur.
-- **Nouveau projet** : dernière version stable (LTS si elle existe), vérifiée en ligne au moment du choix, proposée par l'architect, validée par l'utilisateur, puis notée dans le `CLAUDE.md` du projet.
+- **Nouveau projet** : dernière version stable (LTS si elle existe), vérifiée en ligne au moment du choix, proposée par l'architect, validée par l'utilisateur, puis notée dans les instructions du projet.
 
 Chaque skill indique où trouver la version dans un projet (section « Versions »).
 

@@ -30,11 +30,11 @@ Ce skill n'impose aucune version : avant d'écrire du code, déterminer la versi
 
 ## Test en conditions réelles
 - Par défaut, pas de vrai Discord : appeler les listeners et handlers avec des événements simulés (mocks de `SlashCommandInteractionEvent`, `MessageReceivedEvent`…) et vérifier la réponse produite
-- Vrai Discord uniquement si le `CLAUDE.md` du projet fournit un serveur de test et un token de bot de test. Sinon, les critères qui exigent Discord passent en « non testé en réel »
+- Vrai Discord uniquement si les instructions du projet fournissent un serveur de test et un token de bot de test. Sinon, les critères qui exigent Discord passent en « non testé en réel »
 - Ne jamais utiliser le token du bot de production
 
 ## Points de cohérence
 - Les réponses de plus de 2000 caractères sont tronquées ou paginées
 - Les traitements longs (LLM, requêtes lourdes) utilisent `deferReply()`
-- Le system prompt du LLM reflète le schéma de base actuel (migrations de la feature comprises) et les règles métier du `CLAUDE.md` du projet
+- Le system prompt du LLM reflète le schéma de base actuel (migrations de la feature comprises) et les règles métier des instructions du projet
 - Chaque commande déclarée au démarrage a un handler, et inversement

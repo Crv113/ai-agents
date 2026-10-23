@@ -36,13 +36,16 @@ def git(cwd, *args):
 def project_info(cwd):
     root = git(cwd, "rev-parse", "--show-toplevel") or cwd
     name = os.path.basename(root.rstrip("/")) or root
-    try:
-        with open(os.path.join(root, "CLAUDE.md"), encoding="utf-8") as f:
-            m = re.search(r"^Nom du projet\s*:\s*(.+?)\s*$", f.read(), re.M)
-            if m:
-                name = m.group(1)
-    except OSError:
-        pass
+    # Instructions du projet : AGENTS.md fait foi, CLAUDE.md pour les projets v1.
+    for filename in ("AGENTS.md", "CLAUDE.md"):
+        try:
+            with open(os.path.join(root, filename), encoding="utf-8") as f:
+                m = re.search(r"^Nom du projet\s*:\s*(.+?)\s*$", f.read(), re.M)
+        except OSError:
+            continue
+        if m:
+            name = m.group(1)
+            break
     return {"root": root, "name": name}
 
 

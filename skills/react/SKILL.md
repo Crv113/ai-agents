@@ -20,16 +20,16 @@ Ce skill n'impose aucune version : avant d'écrire du code, déterminer les vers
 
 ## UI
 - Tailwind uniquement — pas de CSS inline ou fichiers CSS séparés sauf fichier global
-- Consulter le CLAUDE.md du projet pour : langue de l'UI, polices, conventions visuelles spécifiques
+- Consulter les instructions du projet pour : langue de l'UI, polices, conventions visuelles spécifiques
 
 ## Tests
 - Vitest + React Testing Library
 - Tester le comportement visible (ce que l'utilisateur voit/fait), pas l'implémentation
 - Mocker les appels TanStack Query avec `msw` ou `vi.mock`
 - Un test par cas : rendu nominal, état vide, état d'erreur, interaction utilisateur critique
-- Consulter le CLAUDE.md du projet pour la configuration de test existante
+- Consulter les instructions du projet pour la configuration de test existante
 
-## À lire dans le CLAUDE.md du projet
+## À lire dans les instructions du projet
 - Hook d'authentification (nom, champs exposés)
 - Variables d'environnement
 - Structure des dossiers, routes, navigation

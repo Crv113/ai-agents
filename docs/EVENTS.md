@@ -39,7 +39,7 @@ Contrat entre les hooks Claude Code (`connectors/claude/hooks/emit.sh`) et le fu
 ```
 
 - `project.root` : racine git du `cwd` de l'événement (sinon le `cwd`)
-- `project.name` : ligne `Nom du projet :` du `CLAUDE.md` à la racine (écrite par `/setup`), sinon nom du dossier
+- `project.name` : ligne `Nom du projet :` (écrite par `/setup`) dans `AGENTS.md` à la racine, sinon dans `CLAUDE.md` (projets v1), sinon nom du dossier
 - `feature_id` : contenu de `.ai-agents/current` à la racine du projet (écrit par `/feature` au démarrage, supprimé à la fin ou en pause), sinon extrait de la branche (`F-YYYYMMDD-NNN`), sinon `null`. Grâce à ce fichier, tout ce qui se passe pendant `/feature` est rattaché à la feature, y compris la spec (avant la création de la branche) ; ce qui se passe en dehors (`/setup`, discussions) ne l'est pas
 - `tool` : seulement sur les événements d'outil. **Jamais** `tool_input` ni `tool_response` (code, secrets)
 - `tokens` : sur `SubagentStop`, somme des `usage` du fichier de session de l'agent (`agent_transcript_path`) ; sur `Stop`, somme des `usage` du **dernier tour** de la session principale (`transcript_path`, depuis le dernier message de l'utilisateur). Un message compte une fois (sa dernière `usage`). Jamais demandé aux agents
