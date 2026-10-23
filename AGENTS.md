@@ -66,7 +66,7 @@ Ce bloc est écrit par `/setup` (une fois par projet, relançable) : seul le con
 
 Cycle : spec → **validation utilisateur** → architect (crée la branche) → **validation utilisateur** → coder (×N couches, build + tests) → commit → reviewer (build + tests + note ≥ 7) **en parallèle de** tester (appli lancée, critères d'acceptation vérifiés en vrai), 3 tours max → validator → synthèse → PR vers la branche cible après accord.
 
-Le tester lance son propre navigateur (Playwright MCP, via `npx`, défini dans `connectors/claude/agents.conf`). **Prérequis : Node ≥ 20** dans le `PATH` des sessions Claude Code. Sans navigateur, les critères d'interface passent en « non testé ».
+Le tester lance son propre navigateur (Playwright MCP, via `npx`, défini dans `connectors/claude/agents.conf`). Il lui faut Node ≥ 20 et un navigateur : `install.sh` les trouve tout seul (voir « Prérequis »). Sans navigateur, les critères d'interface passent en « non testé ».
 
 `/feature` tourne dans la session principale : c'est la seule qui peut poser des questions à l'utilisateur (un subagent n'y a pas accès). Il ne code jamais.
 
@@ -86,6 +86,7 @@ connectors/claude/
   context/<nom>.md        — complément pour un agent ou skill précis (ex. setup.md)
   build/                  — généré par install.sh (ignoré par git)
   hooks/                  — emit.sh/emit.py (événements) et settings_merge.py (fusion dans settings.json)
+  prereqs.sh              — détection de Node ≥ 20 et du navigateur, bilan des prérequis
 install.sh / uninstall.sh — connecteur Claude Code
 docs/REFONTE.md           — feuille de route
 docs/EVENTS.md            — format des événements envoyés au dashboard
@@ -119,6 +120,19 @@ Un seul clone, où l'on veut. Depuis le clone :
 `install.sh` génère les agents au format Claude Code dans `connectors/claude/build/agents/`, puis crée un lien par agent (`~/.claude/agents/<nom>.md`) et par skill (`~/.claude/skills/<nom>`). Il sauvegarde ce qu'il remplace, demande avant toute suppression, et peut être relancé sans risque, y compris après un déplacement du clone. Il ajoute aussi dans `~/.claude/settings.json` des **hooks d'événements** (`SubagentStart`, `SubagentStop`, `PreToolUse`, `PostToolUse`, `Stop`) pour le futur dashboard : asynchrones, silencieux, sans effet si le dashboard est éteint (format : `docs/EVENTS.md`). Le fichier est sauvegardé avant modification, seules nos entrées sont ajoutées, et `uninstall.sh` ne retire qu'elles. `./install.sh --no-hooks` saute cette étape ; sans `python3`, elle est ignorée.
 
 Les skills qui ont des champs dans `skills.conf` sont générés dans `connectors/claude/build/skills/`, les autres sont liés directement. **Relancer `install.sh` après avoir modifié un agent, `agents.conf`, `skills.conf` ou un skill listé dans `skills.conf`** (pas besoin pour les autres skills). Redémarrer Claude Code ensuite.
+
+## Prérequis
+
+Seul **Mac, Linux ou WSL avec git** est indispensable. Le reste active une fonction précise ; s'il manque, le workflow tourne quand même. `install.sh` affiche un bilan à la fin.
+
+| Prérequis | Sert à | Sans lui | Détection par `install.sh` |
+|---|---|---|---|
+| Node ≥ 20 | navigateur du tester | critères d'interface « non testé » | Node du `PATH`, sinon le plus récent de nvm, fnm, volta, asdf ou Homebrew, utilisé pour le tester uniquement (le Node par défaut n'est pas modifié) |
+| Google Chrome | navigateur du tester | Chromium de Playwright | propose de télécharger Chromium (~150 Mo, après accord) |
+| python3 | hooks du dashboard | hooks inactifs | — |
+| `gh` connecté | PR créée par `/feature` | PR à créer à la main | — |
+
+Après l'installation ou la mise à jour de Node ou de Chrome : relancer `./install.sh`.
 
 ## Migration depuis la v1
 

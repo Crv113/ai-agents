@@ -68,6 +68,40 @@ is_ours() {
   return 1
 }
 
+# --- Prérequis : Node >= 20 et navigateur pour le tester -------------------
+. "$CONNECTOR/prereqs.sh"
+find_node20 || true
+BROWSER_MODE=absent
+if find_chrome; then
+  BROWSER_MODE=chrome
+elif find_playwright_chromium; then
+  BROWSER_MODE=chromium
+elif [ -n "$NODE_BIN" ]; then
+  say "Navigateur du tester : Google Chrome est absent."
+  if ask "  Télécharger le Chromium de Playwright (~150 Mo, depuis le CDN de Playwright) ?"; then
+    pwv="$(PATH="$NODE_BIN:$PATH" npm view @playwright/mcp@latest dependencies.playwright 2>/dev/null || true)"
+    if PATH="$NODE_BIN:$PATH" npx -y "playwright@${pwv:-latest}" install chromium; then
+      BROWSER_MODE=chromium
+    else
+      say "  téléchargement échoué : le tester essaiera d'installer le navigateur au premier test"
+    fi
+  fi
+fi
+
+# Adapte la commande du serveur MCP du navigateur à la machine :
+# - Node >= 20 hors PATH : lancé via env PATH=<ce Node> (le Node par défaut n'est pas modifié)
+# - Chrome absent : Chromium de Playwright
+adapt_fields() {
+  out="$1"
+  if [ "$NODE_FROM" = "autre" ]; then
+    out="$(printf '%s\n' "$out" | sed "s|\"command\": \"npx\", \"args\": \[|\"command\": \"env\", \"args\": [\"PATH=$NODE_BIN:/usr/bin:/bin\", \"npx\", |")"
+  fi
+  if [ "$BROWSER_MODE" != "chrome" ]; then
+    out="$(printf '%s\n' "$out" | sed 's|"--headless"|"--browser", "chromium", "--headless"|')"
+  fi
+  printf '%s\n' "$out"
+}
+
 # --- Génération --------------------------------------------------------------
 # Lignes "<nom>.<champ>=<valeur>" du fichier de conf, converties en "champ: valeur".
 conf_fields() { # $1 = fichier conf, $2 = nom
@@ -103,7 +137,7 @@ do_ mkdir -p "$BUILD"
 for src in "$REPO"/agents/*.md; do
   [ -f "$src" ] || continue
   name="$(basename "$src" .md)"
-  gen_md "$src" "$(conf_fields "$AGENTS_CONF" "$name")" "$BUILD/$name.md" "$name"
+  gen_md "$src" "$(adapt_fields "$(conf_fields "$AGENTS_CONF" "$name")")" "$BUILD/$name.md" "$name"
 done
 # Agents générés devenus orphelins (agent supprimé du dépôt)
 if [ -d "$BUILD" ]; then
@@ -264,6 +298,7 @@ if [ "$DRY" = 0 ]; then
   mv "$STATE.tmp" "$STATE"
 fi
 
+prereqs_report
 say ""
 say "Terminé$( [ "$DRY" = 1 ] && echo ' (dry-run, rien n’a été modifié)')."
 say "Redémarrer Claude Code pour prendre en compte les agents et skills."
